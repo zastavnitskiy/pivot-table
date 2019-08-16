@@ -1,9 +1,17 @@
-import { Order } from "../@types/order";
+import { Order, Metric } from "../@types/order";
 
+/**
+ * Seems like pivoting functionality can be even more generic — instead of specifying rows and columns,
+ * we can simple specify a list of dimensions.
+ *
+ * Rows and columns can be introduced later in the rendering step.
+ *
+ * Will continue with this implementation for now, maybe will refactor later.
+ */
 interface PivotConfiguration {
   columns: string;
   index: string[];
-  values: string;
+  values: Metric;
 }
 
 interface PivotCell {
@@ -16,6 +24,10 @@ interface PivotRow {
   columns: PivotCell[];
 }
 
+const aggregate = (orders: Order[], valueProperty: Metric): number => {
+  return orders.reduce((sum, order) => sum + order[valueProperty], 0);
+};
+
 /**
  *
  * Given a data set and aggregation configuration,
@@ -26,6 +38,45 @@ export const pivot = (
   data: Order[],
   config: PivotConfiguration
 ): PivotRow[] => {
+  const dimensions = [...config.index, config.columns];
+
+  const grouped = new Map<string, Order[]>();
+
+  data.forEach(order => {
+    const key =
+      order[dimensions[0]] +
+      "__" +
+      order[dimensions[1]] +
+      "__" +
+      order[dimensions[2]];
+
+    const groupOrders = grouped.get(key) || [];
+    groupOrders.push(order);
+    grouped.set(key, groupOrders);
+  });
+
+  console.log(grouped);
+
+  const aggregated = Array.from(grouped.entries()).map(([key, groupOrders]) => {
+    return {
+      key,
+      [dimensions[0]]: groupOrders[0][dimensions[0]],
+      [dimensions[1]]: groupOrders[0][dimensions[1]],
+      [dimensions[2]]: groupOrders[0][dimensions[2]],
+      orders: groupOrders.length,
+      value: aggregate(groupOrders, config.values)
+    };
+  });
+
+  // wip
+
+  // For each of the dimensions, generate cell value + total
+  // filter our empty values
+  // build pivot table based on that data
+  // this is not pivoting, but aggregation step
+
+  console.log(aggregated);
+
   return [
     {
       index: ["Office Supplies", "Labels"],

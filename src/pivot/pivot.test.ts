@@ -31,7 +31,11 @@ describe("pivot function: core data aggregation logic", () => {
   });
 
   it("should aggregate full dataset", () => {
-    const aggregated = pivot(fullData, {});
+    const aggregated = pivot(fullData, {
+      columns: "state",
+      index: ["category", "subCategory"],
+      values: "sales"
+    });
     const grandTotalRow = aggregated[aggregated.length - 1];
     expect(aggregated.length).toEqual(21);
     expect(grandTotalRow.columns[0].name).toEqual("Alabama");

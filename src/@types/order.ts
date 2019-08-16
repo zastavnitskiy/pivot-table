@@ -21,3 +21,8 @@ export interface Order {
   discount: number; //0,
   profit: number; //41.9136
 }
+
+export type Metric = Extract<
+  keyof Order,
+  "sales" | "quantity" | "discount" | "profit"
+>;
