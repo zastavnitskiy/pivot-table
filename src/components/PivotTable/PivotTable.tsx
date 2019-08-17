@@ -25,15 +25,46 @@ export const PivotTable: React.FC<PivotTableProps> = props => {
   const columns = sortPivotValueArrays(pivotData.columns);
   const rows = sortPivotValueArrays(pivotData.rows);
 
-  const tableData = [
-    [<td />, <td />, <td colSpan={columns.length}>States</td>],
-    [<td />, <td />, ...columns.map(value => <td>{value}</td>)]
+  //   [
+  //     [{
+  //       type: "regular" //header, total, grandTotal,
+  //       value: '100',
+  //       colSpan: undefined,
+  //       rowSpan: undefined
+  //     }]
+  //   ];
+
+  interface CellData {
+    colSpan?: number;
+    rowSpan?: number;
+    value?: React.ReactNode;
+  }
+
+  interface RowData {
+    cells: CellData[];
+  }
+
+  const tableData: RowData[] = [
+    {
+      cells: [
+        { colSpan: rows[0].length },
+        { colSpan: columns.length, value: "States" }
+      ]
+    },
+    {
+      cells: [{ colSpan: rows[0].length }, ...columns.map(value => ({ value }))]
+    }
   ];
 
   for (let rowValues of rows) {
-    const row: any[] = [rowValues.map(value => <td>{value}</td>)];
+    const row: RowData = {
+      cells: [...rowValues.map(value => ({ value }))]
+    };
+
     for (let columnValues of columns) {
-      row.push(<td>{pivotData.getValue(rowValues, columnValues) || 0}</td>);
+      row.cells.push({
+        value: pivotData.getValue(rowValues, columnValues) || 0
+      });
     }
     tableData.push(row);
   }
@@ -42,8 +73,16 @@ export const PivotTable: React.FC<PivotTableProps> = props => {
     <div>
       Table comes here
       <table>
-        {tableData.map(row => (
-          <tr>{row}</tr>
+        {tableData.map(rowData => (
+          <tr>
+            {rowData.cells.map(
+              (cellData): React.ReactElement => (
+                <td colSpan={cellData.colSpan} rowSpan={cellData.rowSpan}>
+                  {cellData.value}
+                </td>
+              )
+            )}
+          </tr>
         ))}
       </table>
     </div>
