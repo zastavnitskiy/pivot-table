@@ -1,11 +1,30 @@
-import { AggregationFn, AggregationEntry, DimensionValues } from "./aggregate";
+import { aggregationFunctions, AggregationTypes } from "./aggregationFunctions";
 
 export type DimensionKeys = string[];
+
+interface DimensionValues {
+  [key: string]: number | string;
+}
 
 export interface DimensionsGroup {
   key: Symbol;
   dimensions: DimensionValues;
   value: number;
+}
+
+interface AggregationEntry {
+  [key: string]: number | string;
+}
+
+interface AggregationFn {
+  (entries: number[]): number;
+}
+
+interface PivotConfig {
+  rows: string[];
+  columns: string[];
+  aggregationType: AggregationTypes;
+  value: string;
 }
 
 function entryDimensionsKey(
@@ -30,6 +49,7 @@ export class Aggregator {
   private _aggregationFn: AggregationFn;
   private _groups: Map<Symbol, AggregationGroup>;
   private _value: string;
+
   addEntry(entry: AggregationEntry) {
     const key = entryDimensionsKey(this._dimensions, entry);
     const group = this._groups.get(key);
@@ -39,6 +59,7 @@ export class Aggregator {
       this._groups.set(key, new AggregationGroup(entry, this._dimensions));
     }
   }
+
   groups(): DimensionsGroup[] {
     const result: DimensionsGroup[] = [];
     for (let aggregationGroup of Array.from(this._groups.values())) {
@@ -49,6 +70,54 @@ export class Aggregator {
         dimensions: aggregationGroup.dimensions
       });
     }
+    return result;
+  }
+
+  static pivot(data: AggregationEntry[], config: PivotConfig): any[] {
+    const dimensions = [...config.columns, ...config.rows];
+    const aggregation = new Aggregator(
+      dimensions,
+      config.value,
+      aggregationFunctions[config.aggregationType]
+    );
+    data.forEach(entry => aggregation.addEntry(entry));
+
+    const aggregated = aggregation.groups();
+
+    const columns = new Map();
+    const rows = new Map();
+    const values = new Map();
+
+    aggregated.forEach(aggregationRow => {
+      const { key, dimensions, value } = aggregationRow;
+
+      const rowValues = config.rows.map(key => dimensions[key]);
+      const rowKey = Symbol.for(rowValues.join("--"));
+      const columnValues = config.columns.map(key => dimensions[key]);
+      const columnKey = Symbol.for(columnValues.join("--"));
+
+      columns.set(columnKey, columnValues);
+      rows.set(rowKey, rowValues);
+      values.set(key, value);
+    });
+
+    const result = [];
+
+    rows.forEach(rowValues => {
+      const row = {
+        name: rowValues,
+        columns: []
+      };
+      columns.forEach(columnValues => {
+        const valueKey = Symbol.for([...columnValues, ...rowValues].join("--"));
+        row.columns.push({
+          name: columnValues,
+          value: values.get(valueKey)
+        });
+      });
+      result.push(row);
+    });
+
     return result;
   }
 }

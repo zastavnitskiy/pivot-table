@@ -1,26 +1,22 @@
-import { aggregate } from "./aggregate";
+import { Aggregator } from "./";
 
 import data from "../mockedData/small-subset.json";
 import fullData from "../mockedData/sales-orders.json";
 
-describe("aggregation function", () => {
-  it("should aggregate", () => {
-    const aggregated = aggregate(data, {
-      dimensions: ["category", "subCategory", "state"],
-      value: "sales",
-      aggregationType: "sum"
+describe("AggregationClass", () => {
+  it("should aggregate", () => {});
+
+  it("should have pivot table representation", () => {
+    const pivot = Aggregator.pivot(data, {
+      columns: ["state"],
+      rows: ["category", "subCategory"],
+      aggregationType: "sum",
+      value: "sales"
     });
-
-    expect(aggregated.lengh).toEqual(6);
-  });
-
-  it("should aggregate big data set", () => {
-    const aggregated = aggregate(fullData, {
-      dimensions: ["category", "subCategory", "state"],
-      value: "sales",
-      aggregationType: "sum"
-    });
-
-    expect(aggregated.lengh).toEqual(6);
+    console.log("pivot", JSON.stringify(pivot, null, 2));
+    // [{
+    //   columns: ['Category', 'Subcategory'],
+    //   rows: ['State']
+    // }]
   });
 });
