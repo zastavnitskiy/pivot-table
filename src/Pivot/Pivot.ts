@@ -7,7 +7,7 @@ interface PivotConfig {
   value: string;
 }
 
-interface DataRow {
+export interface DataRow {
   [key: string]: number | string;
 }
 

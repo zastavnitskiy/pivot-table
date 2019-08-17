@@ -1,2 +1,2 @@
 export { Aggregator } from "./Aggregator";
-export { AggregationTypes } from "./aggregationFunctions";
+export type AggregationTypes = "sum" | "min" | "max";

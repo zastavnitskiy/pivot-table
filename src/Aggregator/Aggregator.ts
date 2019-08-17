@@ -1,4 +1,5 @@
-import { aggregationFunctions, AggregationTypes } from "./aggregationFunctions";
+import { aggregationFunctions } from "./aggregationFunctions";
+import { AggregationTypes } from "./";
 
 export type DimensionKeys = string[];
 
@@ -85,6 +86,7 @@ class AggregationGroup {
     this._dimensionsKeys = dimensions;
     this.addEntry(entry);
   }
+
   public get dimensions(): DimensionValues {
     const entry = this._entries[0];
     return this._dimensionsKeys.reduce(
@@ -98,9 +100,11 @@ class AggregationGroup {
   public get key(): Symbol {
     return entryDimensionsKey(this._dimensionsKeys, this._entries[0]);
   }
+
   public addEntry(entry: AggregationEntry) {
     this._entries.push(entry);
   }
+
   public aggregate(aggreationFn: AggregationFn, value: string): number {
     return aggreationFn(
       this._entries.map(entry => {

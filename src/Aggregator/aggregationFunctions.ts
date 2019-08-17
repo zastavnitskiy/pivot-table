@@ -1,7 +1,5 @@
 const sum = (numbers: number[]): number =>
-  numbers.reduce((sum, number) => sum + number);
-
-export type AggregationTypes = "sum" | "min" | "max";
+  Math.round(numbers.reduce((sum, number) => sum + number));
 
 export const aggregationFunctions = {
   sum,
