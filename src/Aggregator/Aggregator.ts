@@ -20,13 +20,6 @@ interface AggregationFn {
   (entries: number[]): number;
 }
 
-interface PivotConfig {
-  rows: string[];
-  columns: string[];
-  aggregationType: AggregationTypes;
-  value: string;
-}
-
 function dimensionsGroupKey(dimensions: DimensionValues): string {
   return Object.keys(dimensions)
     .reduce((result: string[], key) => {

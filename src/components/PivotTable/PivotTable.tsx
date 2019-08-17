@@ -1,11 +1,22 @@
 import React from "react";
 import { Pivot } from "../../Pivot";
+import styles from "./PivotTable.module.css";
 interface DataRow {
   [key: string]: string | number;
 }
 
 interface PivotTableProps {
   data: DataRow[];
+}
+interface CellData {
+  colSpan?: number;
+  rowSpan?: number;
+  value?: React.ReactNode;
+  className?: string;
+}
+
+interface RowData {
+  cells: CellData[];
 }
 
 const sortPivotValueArrays = (valueArray: string[][]): string[][] => {
@@ -23,26 +34,9 @@ export const PivotTable: React.FC<PivotTableProps> = props => {
   });
 
   const columns = sortPivotValueArrays(pivotData.columns);
-  const rows = sortPivotValueArrays(pivotData.rows);
-
-  //   [
-  //     [{
-  //       type: "regular" //header, total, grandTotal,
-  //       value: '100',
-  //       colSpan: undefined,
-  //       rowSpan: undefined
-  //     }]
-  //   ];
-
-  interface CellData {
-    colSpan?: number;
-    rowSpan?: number;
-    value?: React.ReactNode;
-  }
-
-  interface RowData {
-    cells: CellData[];
-  }
+  const rows = sortPivotValueArrays(pivotData.rows).filter(
+    values => values[0] !== "*" || (values[0] === "*" && values[1] === "*")
+  );
 
   const tableData: RowData[] = [
     {
@@ -52,18 +46,43 @@ export const PivotTable: React.FC<PivotTableProps> = props => {
       ]
     },
     {
-      cells: [{ colSpan: rows[0].length }, ...columns.map(value => ({ value }))]
+      cells: [
+        { colSpan: rows[0].length },
+        ...columns.map(value => ({
+          value: value[0] === "*" ? "Grand Total" : value
+        }))
+      ]
     }
   ];
 
   for (let rowValues of rows) {
+    const rowHeaderCells = [];
+
+    if (rowValues.filter(value => value !== "*").length) {
+      rowHeaderCells.push(
+        ...rowValues.map(value => ({
+          value: value === "*" ? "Total" : value,
+          className: value === "*" ? styles.heading : ""
+        }))
+      );
+    } else {
+      rowHeaderCells.push({
+        value: "Grand Total",
+        className: styles.heading,
+        colSpan: rowValues.length
+      });
+    }
+
     const row: RowData = {
-      cells: [...rowValues.map(value => ({ value }))]
+      cells: [...rowHeaderCells]
     };
 
     for (let columnValues of columns) {
       row.cells.push({
-        value: pivotData.getValue(rowValues, columnValues) || 0
+        value: pivotData.getValue(rowValues, columnValues) || 0,
+        className: [...rowValues, ...columnValues].find(value => value === "*")
+          ? styles.heading
+          : ""
       });
     }
     tableData.push(row);
@@ -73,17 +92,23 @@ export const PivotTable: React.FC<PivotTableProps> = props => {
     <div>
       Table comes here
       <table>
-        {tableData.map(rowData => (
-          <tr>
-            {rowData.cells.map(
-              (cellData): React.ReactElement => (
-                <td colSpan={cellData.colSpan} rowSpan={cellData.rowSpan}>
-                  {cellData.value}
-                </td>
-              )
-            )}
-          </tr>
-        ))}
+        <tbody>
+          {tableData.map(rowData => (
+            <tr>
+              {rowData.cells.map(
+                (cellData): React.ReactElement => (
+                  <td
+                    colSpan={cellData.colSpan}
+                    rowSpan={cellData.rowSpan}
+                    className={cellData.className}
+                  >
+                    {cellData.value}
+                  </td>
+                )
+              )}
+            </tr>
+          ))}
+        </tbody>
       </table>
     </div>
   );
