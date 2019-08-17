@@ -34,23 +34,27 @@ function entryDimensionsKey(
   return Symbol.for(dimensions.map(dimension => entry[dimension]).join("--"));
 }
 
+interface AggregatorProps {
+  data: AggregationEntry[];
+  dimensions: string[];
+  value: string;
+  aggregationType: AggregationTypes;
+}
 export class Aggregator {
-  constructor(
-    dimensions: string[],
-    value: string,
-    aggregationFn: AggregationFn
-  ) {
+  constructor(config: AggregatorProps) {
+    const { data, dimensions, value, aggregationType } = config;
     this._dimensions = dimensions;
     this._groups = new Map();
     this._value = value;
-    this._aggregationFn = aggregationFn;
+    this._aggregationFn = aggregationFunctions[aggregationType];
+    data.forEach(entry => this.addEntry(entry));
   }
   private _dimensions: string[];
   private _aggregationFn: AggregationFn;
   private _groups: Map<Symbol, AggregationGroup>;
   private _value: string;
 
-  addEntry(entry: AggregationEntry) {
+  private addEntry(entry: AggregationEntry) {
     const key = entryDimensionsKey(this._dimensions, entry);
     const group = this._groups.get(key);
     if (group) {
@@ -70,54 +74,6 @@ export class Aggregator {
         dimensions: aggregationGroup.dimensions
       });
     }
-    return result;
-  }
-
-  static pivot(data: AggregationEntry[], config: PivotConfig): any[] {
-    const dimensions = [...config.columns, ...config.rows];
-    const aggregation = new Aggregator(
-      dimensions,
-      config.value,
-      aggregationFunctions[config.aggregationType]
-    );
-    data.forEach(entry => aggregation.addEntry(entry));
-
-    const aggregated = aggregation.groups();
-
-    const columns = new Map();
-    const rows = new Map();
-    const values = new Map();
-
-    aggregated.forEach(aggregationRow => {
-      const { key, dimensions, value } = aggregationRow;
-
-      const rowValues = config.rows.map(key => dimensions[key]);
-      const rowKey = Symbol.for(rowValues.join("--"));
-      const columnValues = config.columns.map(key => dimensions[key]);
-      const columnKey = Symbol.for(columnValues.join("--"));
-
-      columns.set(columnKey, columnValues);
-      rows.set(rowKey, rowValues);
-      values.set(key, value);
-    });
-
-    const result = [];
-
-    rows.forEach(rowValues => {
-      const row = {
-        name: rowValues,
-        columns: []
-      };
-      columns.forEach(columnValues => {
-        const valueKey = Symbol.for([...columnValues, ...rowValues].join("--"));
-        row.columns.push({
-          name: columnValues,
-          value: values.get(valueKey)
-        });
-      });
-      result.push(row);
-    });
-
     return result;
   }
 }
