@@ -11,7 +11,7 @@ describe("AggregationClass", () => {
       value: "sales",
       aggregationType: "sum"
     });
-    expect(aggregation.groups()).toHaveLength(3);
+    expect(aggregation.groups()).toHaveLength(9);
   });
 
   it("should aggregate big data", () => {
@@ -21,7 +21,7 @@ describe("AggregationClass", () => {
       value: "sales",
       aggregationType: "sum"
     });
-    expect(aggregation.groups()).toHaveLength(47);
+    expect(aggregation.groups()).toHaveLength(48);
   });
 
   xit("should throw if dimension is not found in data", () => {

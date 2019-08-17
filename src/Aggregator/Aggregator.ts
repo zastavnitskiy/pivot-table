@@ -8,7 +8,6 @@ interface DimensionValues {
 }
 
 export interface DimensionsGroup {
-  key: Symbol;
   dimensions: DimensionValues;
   value: number;
 }
@@ -28,11 +27,47 @@ interface PivotConfig {
   value: string;
 }
 
-function entryDimensionsKey(
-  dimensions: DimensionKeys,
+function dimensionsGroupKey(dimensions: DimensionValues): string {
+  return Object.keys(dimensions)
+    .reduce((result: string[], key) => {
+      result.push(`${key}:${dimensions[key]}`);
+      return result;
+    }, [])
+    .join("__");
+}
+
+function dimensionGroupsForEntry(
+  dimensionsKeys: DimensionKeys,
   entry: AggregationEntry
-): Symbol {
-  return Symbol.for(dimensions.map(dimension => entry[dimension]).join("--"));
+): DimensionValues[] {
+  const dimensionValues = dimensionsKeys.reduce(
+    (dimensions: DimensionValues, key: string): DimensionValues => {
+      dimensions[key] = entry[key];
+      return dimensions;
+    },
+    {}
+  );
+
+  const result = [dimensionValues];
+
+  for (let key of dimensionsKeys) {
+    result.push({
+      ...dimensionValues,
+      [key]: "*"
+    });
+  }
+
+  result.push(
+    dimensionsKeys.reduce(
+      (dimensions: DimensionValues, key: string): DimensionValues => {
+        dimensions[key] = "*";
+        return dimensions;
+      },
+      {}
+    )
+  );
+
+  return result;
 }
 
 interface AggregatorProps {
@@ -52,25 +87,27 @@ export class Aggregator {
   }
   private _dimensions: string[];
   private _aggregationFn: AggregationFn;
-  private _groups: Map<Symbol, AggregationGroup>;
+  private _groups: Map<String, AggregationGroup>;
   private _value: string;
 
   private addEntry(entry: AggregationEntry) {
-    const key = entryDimensionsKey(this._dimensions, entry);
-    const group = this._groups.get(key);
-    if (group) {
-      group.addEntry(entry);
-    } else {
-      this._groups.set(key, new AggregationGroup(entry, this._dimensions));
+    const dimensionGroups = dimensionGroupsForEntry(this._dimensions, entry);
+
+    for (let dimensionGroup of dimensionGroups) {
+      const key = dimensionsGroupKey(dimensionGroup);
+      const group = this._groups.get(key);
+      if (group) {
+        group.addEntry(entry);
+      } else {
+        this._groups.set(key, new AggregationGroup(entry, dimensionGroup));
+      }
     }
   }
 
   groups(): DimensionsGroup[] {
     const result: DimensionsGroup[] = [];
     for (let aggregationGroup of Array.from(this._groups.values())) {
-      const key = aggregationGroup.key;
       result.push({
-        key,
         value: aggregationGroup.aggregate(this._aggregationFn, this._value),
         dimensions: aggregationGroup.dimensions
       });
@@ -80,26 +117,13 @@ export class Aggregator {
 }
 class AggregationGroup {
   private _entries: AggregationEntry[];
-  private _dimensionsKeys: DimensionKeys;
-  public constructor(entry: AggregationEntry, dimensions: DimensionKeys) {
+  public constructor(entry: AggregationEntry, dimensions: DimensionValues) {
     this._entries = [];
-    this._dimensionsKeys = dimensions;
+    this.dimensions = dimensions;
     this.addEntry(entry);
   }
 
-  public get dimensions(): DimensionValues {
-    const entry = this._entries[0];
-    return this._dimensionsKeys.reduce(
-      (dimensions: DimensionValues, key: string): DimensionValues => {
-        dimensions[key] = entry[key];
-        return dimensions;
-      },
-      {}
-    );
-  }
-  public get key(): Symbol {
-    return entryDimensionsKey(this._dimensionsKeys, this._entries[0]);
-  }
+  public dimensions: DimensionValues;
 
   public addEntry(entry: AggregationEntry) {
     this._entries.push(entry);

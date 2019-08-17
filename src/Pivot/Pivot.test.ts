@@ -10,15 +10,13 @@ describe("Pivot class", () => {
       value: "sales"
     });
 
-    expect(pivotData.rows).toHaveLength(3);
-    expect(pivotData.columns).toHaveLength(2);
+    expect(pivotData.rows).toHaveLength(9);
+    expect(pivotData.columns).toHaveLength(3);
 
     expect(pivotData.getValue(pivotData.rows[0], pivotData.columns[0])).toEqual(
-      261.96
+      262
     );
 
-    expect(
-      pivotData.getValue(pivotData.rows[0], pivotData.columns[1])
-    ).toBeUndefined();
+    expect(pivotData.getValue(["*", "*"], ["*"])).toEqual(1009);
   });
 });
