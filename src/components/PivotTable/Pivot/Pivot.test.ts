@@ -1,5 +1,5 @@
 import { Pivot } from "./Pivot";
-import data from "../mockedData/small-subset.json";
+import data from "../../../mockedData/small-subset.json";
 
 describe("Pivot class", () => {
   it("should take data and return pivot instance", () => {

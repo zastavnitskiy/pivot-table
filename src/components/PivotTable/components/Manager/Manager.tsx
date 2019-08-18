@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { DataRow } from "../../types";
 import { Header } from "../Header/Header";
 import { Table } from "../Table/Table";
-import { AggregationTypes } from "../../../../Aggregator";
+import { AggregationTypes } from "../../Aggregator";
 
 export interface ManagerProps {
   tableName: string;

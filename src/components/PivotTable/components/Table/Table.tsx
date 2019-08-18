@@ -1,5 +1,5 @@
 import React from "react";
-import { Pivot } from "../../../../Pivot";
+import { Pivot } from "../../Pivot";
 import styles from "./Table.module.css";
 import {
   convertToTree,

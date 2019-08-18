@@ -1,5 +1,5 @@
 import { aggregationFunctions } from "./aggregationFunctions";
-import { AggregationTypes } from "./";
+import { AggregationTypes } from ".";
 import { dimensionGroupsForEntry, dimensionsGroupKey } from "./utilities";
 export type DimensionKeys = string[];
 
