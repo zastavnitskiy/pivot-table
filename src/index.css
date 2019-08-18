@@ -9,19 +9,10 @@ body {
   line-height: 1.5;
   background-color: #d8dfe3;
   color: #212121;
+  padding: 10px;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
-
-/* 
-
-Colors:
-Darkblue: #022873
-Background Gray; #D8DFE3
-Totals: #EEEEEE
-Table Header Backgrounds: #F5F5F5
-Table Background: #ffffff
-*/
