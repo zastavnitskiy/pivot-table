@@ -33,7 +33,7 @@ Simple CSS reset for table styles.
 
 .table td,
 .table th {
-  padding: 10px 12px 10px 20px;
+  padding: 5px 12px 5px 20px;
   white-space: nowrap;
 }
 
@@ -109,10 +109,10 @@ Simple CSS reset for table styles.
 
 .regularRow:first-of-type th,
 .regularRow:first-of-type td {
-  padding-top: 30px;
+  padding-top: 20px;
 }
 
 .regularRow:nth-last-of-type(2) th,
 .regularRow:nth-last-of-type(2) td {
-  padding-bottom: 30px;
+  padding-bottom: 20px;
 }
