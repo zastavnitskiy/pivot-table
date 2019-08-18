@@ -60,3 +60,7 @@ export function sortWithTotals(a: string, b: string): number {
     return a.localeCompare(b);
   }
 }
+
+export function classnames(...args: any[]): string {
+  return args.filter(arg => Boolean(arg)).join(" ");
+}

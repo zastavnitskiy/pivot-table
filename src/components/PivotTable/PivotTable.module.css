@@ -1,23 +1,113 @@
 .heading {
   font-weight: bold;
 }
+.table {
+  background: #fdfdfd;
+}
+
+/**
+Simple CSS reset for table styles.
+*/
+.table,
+.table thead,
+.table tbody,
+.table tfoot,
+.table tr,
+.table th,
+.table td {
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-collapse: inherit;
+  border-spacing: 0;
+  border-color: inherit;
+  vertical-align: inherit;
+  text-align: left;
+  font-weight: inherit;
+  -webkit-border-horizontal-spacing: 0;
+  -webkit-border-vertical-spacing: 0;
+}
+
+.table {
+}
+
+.table td,
+.table th {
+  padding: 10px 12px 10px 32px;
+  white-space: nowrap;
+}
 
 .table th {
-  outline: 1px solid lime;
+  background: #f5f5f5;
+  vertical-align: top;
+  text-align: left;
 }
 
 .table td {
-  outline: 1px solid salmon;
+  /* outline: 1px solid salmon; */
+  text-align: right;
 }
 
-.grandTotalRow {
-  color: red;
+.topHeaderRow th {
+  background: #022873;
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.topHeaderRow__secondary th {
+  color: #98a8c6;
+  font-size: 12px;
+  text-transform: none;
+  font-weight: normal;
+}
+
+.topHeaderRow:last-child {
+  border-bottom: 1px solid #fff;
+}
+
+.topHeaderRow .topHeaderCell__value {
+  text-align: right;
+}
+
+.grandTotalRow th,
+.grandTotalRow td {
+  background: #333;
+  color: #fff;
+  font-weight: 600;
 }
 
 .totalRow {
-  color: blue;
+  color: #000;
+}
+.totalRow th,
+.totalRow td {
+  background: #eee;
+
+  border-top: 1px solid #dedede;
+  border-bottom: 1px solid #dedede;
 }
 
-.totalColumn {
-  color: green;
+.totalRow th,
+.totalRow td {
+  font-weight: 600;
+}
+
+.totalColumn th,
+.totalColumn td {
+  font-weight: 600;
+}
+
+.table .headerColumn__primary {
+  font-weight: 600;
+}
+
+.regularRow:first-of-type th,
+.regularRow:first-of-type td {
+  padding-top: 30px;
+}
+
+.regularRow:nth-last-of-type(2) th,
+.regularRow:nth-last-of-type(2) td {
+  padding-bottom: 30px;
 }

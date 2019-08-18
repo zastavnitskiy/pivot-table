@@ -1,7 +1,7 @@
 import React from "react";
 import { Pivot } from "../../Pivot";
 import styles from "./PivotTable.module.css";
-import { convertToTree, Node, sortWithTotals } from "./utilities";
+import { convertToTree, Node, sortWithTotals, classnames } from "./utilities";
 interface DataRow {
   [key: string]: string | number;
 }
@@ -32,7 +32,7 @@ const TableGroup: React.FC<TableRowProps> = props => {
     <tbody>
       {rowChildren.map((subCategory, index) => {
         const cells = [];
-        let rowClassname = "";
+        let rowClassname = styles.regularRow;
 
         /**
          * We also aggregate subcategories, e.g. categry=*, subcategory="soemthing"
@@ -68,7 +68,11 @@ const TableGroup: React.FC<TableRowProps> = props => {
            * Group top level categories for multiple subcategory rows.
            */
           cells.push(
-            <th key={category + "header"} rowSpan={rowChildren.length - 1}>
+            <th
+              key={category + "header"}
+              rowSpan={rowChildren.length - 1}
+              className={styles.headerColumn__primary}
+            >
               {category}
             </th>,
             <th key={subCategory + "header"}>{subCategory}</th>
@@ -151,16 +155,24 @@ export const PivotTable: React.FC<PivotTableProps> = props => {
     <div>
       <table className={styles.table}>
         <thead>
-          <tr>
+          <tr className={styles.topHeaderRow}>
             <th colSpan={2}>Products</th>
             <th colSpan={columns.length - 1}>States</th>
             <th></th>
           </tr>
-          <tr>
+          <tr
+            className={classnames(
+              styles.topHeaderRow,
+              styles.topHeaderRow__secondary
+            )}
+          >
             <th>Category</th>
             <th>Sub-Category</th>
             {columns.map(columnHeader => (
-              <th key={`column-header-${columnHeader}`}>
+              <th
+                key={`column-header-${columnHeader}`}
+                className={styles.topHeaderCell__value}
+              >
                 {columnHeader === "*" ? "Grand Total" : columnHeader}
               </th>
             ))}
