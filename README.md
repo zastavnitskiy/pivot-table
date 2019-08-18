@@ -15,7 +15,7 @@ The application is bootstrapped with Creat-react-app.
 
 Latest version is also deployed to https://pivot-table.netlify.com/
 
-# Simplifications
+# Assumptions and Simplifications
 
 ## Stickyness
 
@@ -39,7 +39,7 @@ I wasn't paying much attention to the performance, as the main goal was to make 
 
 As Kent Beck said in his famous quote, making it fast is the next step.
 
-# Improvements before production release.
+# Next Steps
 
 ## Sticky Behavior
 
