@@ -1,8 +1,16 @@
 .heading {
   font-weight: bold;
 }
+
+.tableContainer {
+  width: 100%;
+  overflow: scroll;
+}
+
 .table {
   background: #fdfdfd;
+  position: relative;
+  table-layout: fixed;
 }
 
 /**
@@ -44,8 +52,8 @@ Simple CSS reset for table styles.
 }
 
 .table td {
-  /* outline: 1px solid salmon; */
   text-align: right;
+  background: #fff;
 }
 
 .topHeaderRow th {
@@ -81,7 +89,6 @@ Simple CSS reset for table styles.
 .totalRow th,
 .totalRow td {
   background: #eee;
-
   border-top: 1px solid #dedede;
   border-bottom: 1px solid #dedede;
 }
@@ -104,6 +111,7 @@ Simple CSS reset for table styles.
 .table .headerColumn {
   text-align: left;
 }
+
 .table .headerColumn__primary {
   font-weight: 600;
 }
@@ -116,4 +124,20 @@ Simple CSS reset for table styles.
 .row:nth-last-of-type(2) th,
 .row:nth-last-of-type(2) td {
   padding-bottom: 20px;
+}
+
+.table .stickyCell {
+  position: sticky;
+  left: 0;
+  box-shadow: 2px 0 2px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.table .stickyCell:nth-child(2) {
+  left: 135px;
+}
+
+.table .topHeaderRow__primary .stickyCell:nth-child(2) {
+  outline: 2px solid red;
+  left: 246px;
 }

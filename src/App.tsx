@@ -23,7 +23,7 @@ function App() {
         tableName="Sum Sales"
         fetchData={fetchData}
         rows={["category", "subCategory"]}
-        columns={["state", "segment"]}
+        columns={["state"]}
         aggregationType="sum"
         valueProperty={"sales"}
         rowsLabel="Products"

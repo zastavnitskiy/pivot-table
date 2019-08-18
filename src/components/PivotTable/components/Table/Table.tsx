@@ -81,7 +81,9 @@ export const Table: React.FC<TableProps> = props => {
     <tr
       className={classnames(styles.topHeaderRow, styles.topHeaderRow__primary)}
     >
-      <th colSpan={props.rows.length}>{props.rowsLabel}</th>
+      <th colSpan={props.rows.length} className={classnames(styles.stickyCell)}>
+        {props.rowsLabel}
+      </th>
       <th colSpan={columns.length}>{props.columnsLabel}</th>
     </tr>
   );
@@ -90,7 +92,9 @@ export const Table: React.FC<TableProps> = props => {
     const rowData = [];
     if (i === props.columns.length - 1) {
       for (let k = 0; k < props.rows.length; k++) {
-        rowData.push(<th>{props.rows[k]}</th>);
+        rowData.push(
+          <th className={classnames(styles.stickyCell)}>{props.rows[k]}</th>
+        );
       }
     } else {
       for (let k = 0; k < props.rows.length; k++) {
@@ -99,7 +103,11 @@ export const Table: React.FC<TableProps> = props => {
     }
 
     for (let column of columns) {
-      rowData.push(<th>{column[i] === "*" ? "Total" : column[i]}</th>);
+      rowData.push(
+        <th className={styles.topHeaderCell__value}>
+          {column[i] === "*" ? "Total" : column[i]}
+        </th>
+      );
     }
 
     theadMarkup.push(
@@ -148,10 +156,14 @@ export const Table: React.FC<TableProps> = props => {
     }
 
     if (isGrandTotalRow) {
-      rowData.push(<th colSpan={row.length}>Grand total</th>);
+      rowData.push(
+        <th className={classnames(styles.stickyCell)} colSpan={row.length}>
+          Grand total
+        </th>
+      );
     } else if (isTotalRow) {
       rowData.push(
-        <th colSpan={row.length}>
+        <th colSpan={row.length} className={classnames(styles.stickyCell)}>
           {row.filter(rowValue => rowValue !== "*").join("-") + "   total"}
         </th>
       );
@@ -163,7 +175,8 @@ export const Table: React.FC<TableProps> = props => {
               styles.headerColumn,
               index === 0
                 ? styles.headerColumn__primary
-                : styles.headerColumn__secondary
+                : styles.headerColumn__secondary,
+              styles.stickyCell
             )}
           >
             {isFirstOfTopLevelCategory || index > 0 ? rowValue : ""}
@@ -194,5 +207,9 @@ export const Table: React.FC<TableProps> = props => {
     }
   }
 
-  return <table className={styles.table}>{tableMarkup}</table>;
+  return (
+    <div className={styles.tableContainer}>
+      <table className={styles.table}>{tableMarkup}</table>
+    </div>
+  );
 };
