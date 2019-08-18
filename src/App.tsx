@@ -8,18 +8,20 @@ const sleep = async (ms: number) =>
     window.setTimeout(resolve, ms);
   });
 
+/**
+ * Naive way of mocking loading data from backend in async manner.
+ */
+const fetchData = async () => {
+  await sleep(100);
+  return data;
+};
+
 function App() {
   return (
     <div className="App">
       <PivotTable
         tableName="Sum Sales"
-        fetchData={async () => {
-          /**
-           * Naive way of mocking loading data from backend in async manner.
-           */
-          await sleep(100);
-          return data;
-        }}
+        fetchData={fetchData}
         rows={["category", "subCategory"]}
         columns={["state"]}
         aggregationType="sum"
