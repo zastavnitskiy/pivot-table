@@ -18,6 +18,17 @@ export interface TableProps
   > {
   data: DataRow[];
 }
+
+/**
+ *
+ * Table Component — it's responsible for rendering the table headers and values,
+ * grouping headers, etc.
+ *
+ * It needs some refactoring, if I will have time I will do that.
+ *
+ * For now, the code is a bit complex and has comments.
+ *
+ */
 export const Table: React.FC<TableProps> = props => {
   const label = (original: string): React.ReactNode =>
     (props.labelOverrides && props.labelOverrides[original]) || original;
@@ -35,6 +46,9 @@ export const Table: React.FC<TableProps> = props => {
   const tableMarkup: React.ReactElement[] = [];
   const theadMarkup: React.ReactElement[] = [];
 
+  /**
+   * First, prepare blue header.
+   */
   theadMarkup.push(
     <tr
       className={classnames(styles.topHeaderRow, styles.topHeaderRow__primary)}
@@ -47,7 +61,10 @@ export const Table: React.FC<TableProps> = props => {
   );
 
   for (let i = 0; i < props.columns.length; i++) {
-    const rowData = [];
+    const rowData: React.ReactElement[] = [];
+    /**
+     * First columns will display row dimension titles(or)
+     */
     if (i === props.columns.length - 1) {
       for (let k = 0; k < props.rows.length; k++) {
         rowData.push(
@@ -62,6 +79,9 @@ export const Table: React.FC<TableProps> = props => {
       }
     }
 
+    /**
+     * Other columns with display column dimension values.
+     */
     for (let column of columns) {
       rowData.push(
         <th className={styles.topHeaderCell__value}>
@@ -70,6 +90,9 @@ export const Table: React.FC<TableProps> = props => {
       );
     }
 
+    /**
+     * Finally, push rows into thead block with some classes on top.
+     */
     theadMarkup.push(
       <tr
         className={classnames(
@@ -82,8 +105,19 @@ export const Table: React.FC<TableProps> = props => {
     );
   }
 
+  /**
+   * And push that into the table markup.
+   */
   tableMarkup.push(<thead>{theadMarkup}</thead>);
 
+  /**
+   * Next step, populate table data.
+   *
+   * We will use a tbody group for each
+   * of the top-level row dimensions.
+   *
+   *
+   */
   let tbodyRowGroupMarkup: React.ReactElement[] = [];
 
   for (let i = 0; i < rows.length; i++) {
@@ -115,19 +149,30 @@ export const Table: React.FC<TableProps> = props => {
       }
     }
 
+    /**
+     * Again, first we populate row headers.
+     *
+     */
     if (isGrandTotalRow) {
+      /** Grand Total row takes full width of the row header block(colspand=rowDimensions.length) */
       rowData.push(
         <th className={classnames(styles.stickyCell)} colSpan={row.length}>
           Grand total
         </th>
       );
     } else if (isTotalRow) {
+      /** Dimension Total row takes full width of the row header block(colspand=rowDimensions.length) */
       rowData.push(
         <th colSpan={row.length} className={classnames(styles.stickyCell)}>
           {row.filter(rowValue => rowValue !== "*").join("-") + "   total"}
         </th>
       );
     } else {
+      /** For regular rows, header will display dimension values.
+       *
+       * Hover, we only display primary dimension value for the
+       * first row in given dimension group.
+       */
       row.forEach((rowValue, index) => {
         rowData.push(
           <td
@@ -145,11 +190,18 @@ export const Table: React.FC<TableProps> = props => {
       });
     }
 
+    /**
+     * And now populate values for the categories.
+     */
     for (let column of columns) {
       const value = pivotData.getValue(row, column) || 0;
       rowData.push(<td>{formatNumber(value)}</td>);
     }
 
+    /**
+     * Last code block is responsible for closing tbody groups and creating new ones, every time we
+     * the primary row dimension is changed.
+     */
     tbodyRowGroupMarkup.push(
       <tr
         className={classnames(
