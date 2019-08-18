@@ -1,7 +1,13 @@
 import React from "react";
 import { Pivot } from "../../Pivot";
 import styles from "./PivotTable.module.css";
-import { convertToTree, Node, sortWithTotals, classnames } from "./utilities";
+import {
+  convertToTree,
+  Node,
+  sortWithTotals,
+  classnames,
+  formatNumber
+} from "./utilities";
 interface DataRow {
   [key: string]: string | number;
 }
@@ -92,7 +98,9 @@ const TableGroup: React.FC<TableRowProps> = props => {
               key={category + subCategory + state + "value"}
               className={state === "*" ? styles.totalColumn : ""}
             >
-              {row.children[subCategory].children[state].value || 0}
+              {formatNumber(
+                row.children[subCategory].children[state].value || 0
+              )}
             </td>
           );
         }
