@@ -13,6 +13,8 @@ The application is bootstrapped with Creat-react-app.
 - `yarn install`
 - `yarn start`
 
+Latest version is also deployed to https://pivot-table.netlify.com/
+
 # Simplifications
 
 ## Stickyness
