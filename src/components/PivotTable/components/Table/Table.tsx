@@ -1,13 +1,7 @@
 import React from "react";
 import { Pivot } from "../../Pivot";
 import styles from "./Table.module.css";
-import {
-  convertToTree,
-  Node,
-  sortWithTotals,
-  classnames,
-  formatNumber
-} from "../../utilities";
+import { classnames, formatNumber } from "../../utilities";
 import { DataRow } from "../../types";
 import { ManagerProps } from "../Manager/Manager";
 
@@ -35,37 +29,8 @@ export const Table: React.FC<TableProps> = props => {
     value: props.valueProperty //todo rename value property in Pivot and Aggregator
   });
 
-  const rowsRoot = convertToTree(pivotData.rows);
-  const columnsRoot = convertToTree(pivotData.columns);
-  const rows: string[][] = [];
-
-  const visitRows = (root: Node, values: string[] = []) => {
-    const { children, name } = root;
-    const childrenToVisit = Object.keys(children).sort(sortWithTotals);
-    if (!children || Object.keys(children).length === 0) {
-      rows.push([...values, name].slice(1));
-    }
-    for (let childKey of childrenToVisit) {
-      visitRows(children[childKey], [...values, name]);
-    }
-  };
-
-  visitRows(rowsRoot);
-
-  const columns: string[][] = [];
-
-  const visitColumns = (root: Node, values: string[] = []) => {
-    const { children, name } = root;
-    const childrenToVisit = Object.keys(children).sort(sortWithTotals);
-    if (!children || Object.keys(children).length === 0) {
-      columns.push([...values, name].slice(1));
-    }
-    for (let childKey of childrenToVisit) {
-      visitColumns(children[childKey], [...values, name]);
-    }
-  };
-
-  visitColumns(columnsRoot);
+  const rows = pivotData.rows;
+  const columns = pivotData.columns;
 
   const tableMarkup: React.ReactElement[] = [];
   const theadMarkup: React.ReactElement[] = [];

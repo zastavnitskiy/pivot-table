@@ -41,6 +41,14 @@ export function convertToTree(rows: string[][]): Node {
   return root;
 }
 
+export function classnames(...args: any[]): string {
+  return args.filter(arg => Boolean(arg)).join(" ");
+}
+
+export function formatNumber(number: number): string {
+  return Intl.NumberFormat("en-US").format(number);
+}
+
 /**
  * We use * to mark the Total aggregations in the table.
  *
@@ -61,10 +69,32 @@ export function sortWithTotals(a: string, b: string): number {
   }
 }
 
-export function classnames(...args: any[]): string {
-  return args.filter(arg => Boolean(arg)).join(" ");
-}
+export const flattenAndSort = (root: Node): string[][] => {
+  const result: string[][] = [];
 
-export function formatNumber(number: number): string {
-  return Intl.NumberFormat("en-US").format(number);
-}
+  const visit = (root: Node, values: string[] = []) => {
+    const { children, name } = root;
+    const childrenToVisit = Object.keys(children).sort(sortWithTotals);
+    if (!children || Object.keys(children).length === 0) {
+      result.push([...values, name].slice(1));
+    }
+    for (let childKey of childrenToVisit) {
+      visit(children[childKey], [...values, name]);
+    }
+  };
+
+  visit(root);
+
+  return result;
+};
+
+/**
+ * Now we need to sort the rows and columns nicely,
+ * move total and grand-total rows into their positions.
+ *
+ * We will do this by converting rows into a dimensions tree, and them flattening back
+ * while sorting level by level.
+ */
+export const sortDimensions = (dimensions: string[][]): string[][] => {
+  return flattenAndSort(convertToTree(dimensions));
+};

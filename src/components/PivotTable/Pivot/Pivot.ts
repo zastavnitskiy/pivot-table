@@ -1,4 +1,5 @@
 import { Aggregator, AggregationTypes } from "../Aggregator";
+import { sortDimensions } from "../utilities";
 
 interface PivotConfig {
   rows: string[];
@@ -37,8 +38,8 @@ export class Pivot {
       values.set(this.rowColumnKey(rowValues, columnValues), value);
     });
 
-    this.columns = Array.from(columns.values());
-    this.rows = Array.from(rows.values());
+    this.rows = sortDimensions(Array.from(rows.values()));
+    this.columns = sortDimensions(Array.from(columns.values()));
     this.values = values;
   }
 

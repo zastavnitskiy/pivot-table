@@ -13,7 +13,7 @@ describe("Pivot class", () => {
     expect(pivotData.rows).toHaveLength(9);
     expect(pivotData.columns).toHaveLength(3);
 
-    expect(pivotData.getValue(pivotData.rows[0], pivotData.columns[0])).toEqual(
+    expect(pivotData.getValue(pivotData.rows[0], pivotData.columns[1])).toEqual(
       262
     );
 
@@ -35,35 +35,35 @@ describe("Pivot class", () => {
           "Bookcases",
         ],
         Array [
+          "Furniture",
+          "Chairs",
+        ],
+        Array [
+          "Furniture",
+          "*",
+        ],
+        Array [
+          "Office Supplies",
+          "Labels",
+        ],
+        Array [
+          "Office Supplies",
+          "*",
+        ],
+        Array [
           "*",
           "Bookcases",
         ],
         Array [
-          "Furniture",
-          "*",
-        ],
-        Array [
-          "*",
-          "*",
-        ],
-        Array [
-          "Furniture",
-          "Chairs",
-        ],
-        Array [
           "*",
           "Chairs",
-        ],
-        Array [
-          "Office Supplies",
-          "Labels",
         ],
         Array [
           "*",
           "Labels",
         ],
         Array [
-          "Office Supplies",
+          "*",
           "*",
         ],
       ]
@@ -71,13 +71,13 @@ describe("Pivot class", () => {
     expect(pivotData.columns).toMatchInlineSnapshot(`
       Array [
         Array [
+          "California",
+        ],
+        Array [
           "Kentucky",
         ],
         Array [
           "*",
-        ],
-        Array [
-          "California",
         ],
       ]
     `);
