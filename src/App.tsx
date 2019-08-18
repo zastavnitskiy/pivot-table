@@ -1,12 +1,30 @@
 import React from "react";
 import "./App.css";
-import { Table } from "./components/PivotTable";
+import PivotTable from "./components/PivotTable";
 import data from "./mockedData/sales-orders.json";
+
+const sleep = async (ms: number) =>
+  new Promise(resolve => {
+    window.setTimeout(resolve, ms);
+  });
 
 function App() {
   return (
     <div className="App">
-      <Table tableName="Sum Sales" data={data} />
+      <PivotTable
+        tableName="Sum Sales"
+        fetchData={async () => {
+          /**
+           * Naive way of mocking loading data from backend in async manner.
+           */
+          await sleep(100);
+          return data;
+        }}
+        rows={["category", "subCategory"]}
+        columns={["state"]}
+        aggregationType="sum"
+        valueProperty={"sales"}
+      />
     </div>
   );
 }

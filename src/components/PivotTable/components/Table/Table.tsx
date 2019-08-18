@@ -1,6 +1,5 @@
 import React from "react";
 import { Pivot } from "../../../../Pivot";
-import { Header } from "../Header/Header";
 import styles from "./Table.module.css";
 import {
   convertToTree,
@@ -9,12 +8,14 @@ import {
   classnames,
   formatNumber
 } from "../../utilities";
-interface DataRow {
-  [key: string]: string | number;
-}
+import { DataRow } from "../../types";
+import { ManagerProps } from "../Manager/Manager";
 
-export interface TableProps {
-  tableName: React.ReactNode;
+export interface TableProps
+  extends Pick<
+    ManagerProps,
+    "aggregationType" | "valueProperty" | "rows" | "columns"
+  > {
   data: DataRow[];
 }
 interface CellData {
@@ -24,20 +25,16 @@ interface CellData {
   className?: string;
 }
 
-interface RowData {
-  cells: CellData[];
-}
-
 interface TableRowProps {
   row: any;
 }
 
 export const Table: React.FC<TableProps> = props => {
   const pivotData = new Pivot(props.data, {
-    columns: ["state"],
-    rows: ["category", "subCategory"],
-    aggregationType: "sum",
-    value: "sales"
+    columns: props.columns,
+    rows: props.rows,
+    aggregationType: props.aggregationType,
+    value: props.valueProperty //todo rename value property in Pivot and Aggregator
   });
 
   const rowsRoot = convertToTree(pivotData.rows);
@@ -78,7 +75,6 @@ export const Table: React.FC<TableProps> = props => {
 
   return (
     <div>
-      <Header {...props}> </Header>
       <table className={styles.table}>
         <thead>
           <tr className={styles.topHeaderRow}>
