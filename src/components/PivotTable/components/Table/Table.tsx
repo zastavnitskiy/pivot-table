@@ -100,96 +100,93 @@ export const Table: React.FC<TableProps> = props => {
             ))}
           </tr>
         </thead>
-        {rowGroups.map(rowGroup => (
-          <TableGroup key={`row-group-${rowGroup.name}`} row={rowGroup} />
-        ))}
+        {rowGroups.map(row => {
+          const category = row.name;
+          const rowChildren = Object.keys(row.children).sort(sortWithTotals);
+
+          return (
+            <tbody key={`row-group-${row.name}`}>
+              {rowChildren.map((subCategory, index) => {
+                const cells = [];
+                let rowClassname = styles.regularRow;
+
+                /**
+                 * We also aggregate subcategories, e.g. categry=*, subcategory="soemthing"
+                 *
+                 * While in this data set this is not needed, I'll keep it on
+                 * the data level and only hide in presentation.
+                 */
+
+                if (category === "*" && subCategory !== "*") {
+                  return null;
+                } else if (category === "*" && subCategory === "*") {
+                  /**
+                   * Grand Total Label
+                   */
+                  cells.push(
+                    <th key="Grand Total Header" colSpan={2}>
+                      Grand Total
+                    </th>
+                  );
+                  rowClassname = styles.grandTotalRow;
+                } else if (category !== "*" && subCategory === "*") {
+                  /**
+                   * Total labels for categories
+                   */
+                  cells.push(
+                    <th key={`${category} total header`} colSpan={2}>
+                      {category} total
+                    </th>
+                  );
+                  rowClassname = styles.totalRow;
+                } else if (index === 0) {
+                  /**
+                   * Group top level categories for multiple subcategory rows.
+                   */
+                  cells.push(
+                    <th
+                      key={category + "header"}
+                      rowSpan={rowChildren.length - 1}
+                      className={styles.headerColumn__primary}
+                    >
+                      {category}
+                    </th>,
+                    <th key={subCategory + "header"}>{subCategory}</th>
+                  );
+                } else {
+                  cells.push(
+                    <th key={subCategory + "header"}>{subCategory}</th>
+                  );
+                }
+
+                /**
+                 * Finally display column values
+                 */
+                for (let state of Object.keys(
+                  row.children[subCategory].children
+                ).sort(sortWithTotals)) {
+                  cells.push(
+                    <td
+                      key={category + subCategory + state + "value"}
+                      className={state === "*" ? styles.totalColumn : ""}
+                    >
+                      {formatNumber(
+                        row.children[subCategory].children[state].value || 0
+                      )}
+                    </td>
+                  );
+                }
+
+                return (
+                  <tr key={subCategory + index} className={rowClassname}>
+                    {cells}
+                  </tr>
+                );
+              })}
+            </tbody>
+          );
+        })}
       </table>
     </div>
-  );
-};
-
-const TableGroup: React.FC<TableRowProps> = props => {
-  const { row } = props;
-  const category = row.name;
-  const rowChildren = Object.keys(row.children).sort(sortWithTotals);
-
-  return (
-    <tbody>
-      {rowChildren.map((subCategory, index) => {
-        const cells = [];
-        let rowClassname = styles.regularRow;
-
-        /**
-         * We also aggregate subcategories, e.g. categry=*, subcategory="soemthing"
-         *
-         * While in this data set this is not needed, I'll keep it on
-         * the data level and only hide in presentation.
-         */
-
-        if (category === "*" && subCategory !== "*") {
-          return null;
-        } else if (category === "*" && subCategory === "*") {
-          /**
-           * Grand Total Label
-           */
-          cells.push(
-            <th key="Grand Total Header" colSpan={2}>
-              Grand Total
-            </th>
-          );
-          rowClassname = styles.grandTotalRow;
-        } else if (category !== "*" && subCategory === "*") {
-          /**
-           * Total labels for categories
-           */
-          cells.push(
-            <th key={`${category} total header`} colSpan={2}>
-              {category} total
-            </th>
-          );
-          rowClassname = styles.totalRow;
-        } else if (index === 0) {
-          /**
-           * Group top level categories for multiple subcategory rows.
-           */
-          cells.push(
-            <th
-              key={category + "header"}
-              rowSpan={rowChildren.length - 1}
-              className={styles.headerColumn__primary}
-            >
-              {category}
-            </th>,
-            <th key={subCategory + "header"}>{subCategory}</th>
-          );
-        } else {
-          cells.push(<th key={subCategory + "header"}>{subCategory}</th>);
-        }
-
-        /**
-         * Finally display column values
-         */
-        for (let state of Object.keys(row.children[subCategory].children).sort(
-          sortWithTotals
-        )) {
-          cells.push(
-            <td
-              key={category + subCategory + state + "value"}
-              className={state === "*" ? styles.totalColumn : ""}
-            >
-              {formatNumber(
-                row.children[subCategory].children[state].value || 0
-              )}
-            </td>
-          );
-        }
-
-        return (
-          <tr key={subCategory + index} className={rowClassname}>
-            {cells}
-          </tr>
-        );
-      })}
-    </tbody>
   );
 };
