@@ -28,6 +28,10 @@ function App() {
         valueProperty={"sales"}
         rowsLabel="Products"
         columnsLabel="States"
+        labelOverrides={{
+          category: "Category",
+          subCategory: "Sub-Category"
+        }}
       />
     </div>
   );

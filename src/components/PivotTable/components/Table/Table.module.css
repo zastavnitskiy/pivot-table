@@ -129,7 +129,7 @@ Simple CSS reset for table styles.
 .table .stickyCell {
   position: sticky;
   left: 0;
-  box-shadow: 2px 0 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 2px -1px rgba(0, 0, 0, 0.1);
   z-index: 1;
 }
 

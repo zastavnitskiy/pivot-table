@@ -20,20 +20,10 @@ export interface TableProps
     | "columns"
     | "rowsLabel"
     | "columnsLabel"
+    | "labelOverrides"
   > {
   data: DataRow[];
 }
-interface CellData {
-  colSpan?: number;
-  rowSpan?: number;
-  value?: React.ReactNode;
-  className?: string;
-}
-
-interface TableRowProps {
-  row: any;
-}
-
 export const Table: React.FC<TableProps> = props => {
   const pivotData = new Pivot(props.data, {
     columns: props.columns,
@@ -45,6 +35,9 @@ export const Table: React.FC<TableProps> = props => {
   const rowsRoot = convertToTree(pivotData.rows);
   const columnsRoot = convertToTree(pivotData.columns);
   const rows: string[][] = [];
+
+  const label = (original: string): React.ReactNode =>
+    props.labelOverrides[original] || original;
 
   const visitRows = (root: Node, values: string[] = []) => {
     const { children, name } = root;
@@ -93,7 +86,9 @@ export const Table: React.FC<TableProps> = props => {
     if (i === props.columns.length - 1) {
       for (let k = 0; k < props.rows.length; k++) {
         rowData.push(
-          <th className={classnames(styles.stickyCell)}>{props.rows[k]}</th>
+          <th className={classnames(styles.stickyCell)}>
+            {label(props.rows[k])}
+          </th>
         );
       }
     } else {

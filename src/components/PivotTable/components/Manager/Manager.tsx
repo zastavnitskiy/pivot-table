@@ -4,6 +4,9 @@ import { Header } from "../Header/Header";
 import { Table } from "../Table/Table";
 import { AggregationTypes } from "../../Aggregator";
 
+interface TextOverrides {
+  [key: string]: React.ReactNode;
+}
 export interface ManagerProps {
   tableName: string;
   fetchData: FetchDataFn;
@@ -13,6 +16,7 @@ export interface ManagerProps {
   valueProperty: string;
   rowsLabel: React.ReactNode;
   columnsLabel: React.ReactNode;
+  labelOverrides: TextOverrides;
 }
 
 interface FetchDataFn {
@@ -54,6 +58,7 @@ export const TableManager: React.FC<ManagerProps> = props => {
         valueProperty={props.valueProperty}
         rowsLabel={props.rowsLabel}
         columnsLabel={props.columnsLabel}
+        labelOverrides={props.labelOverrides}
       ></Table>
     );
   }
