@@ -25,6 +25,9 @@ export interface TableProps
   data: DataRow[];
 }
 export const Table: React.FC<TableProps> = props => {
+  const label = (original: string): React.ReactNode =>
+    (props.labelOverrides && props.labelOverrides[original]) || original;
+
   const pivotData = new Pivot(props.data, {
     columns: props.columns,
     rows: props.rows,
@@ -35,9 +38,6 @@ export const Table: React.FC<TableProps> = props => {
   const rowsRoot = convertToTree(pivotData.rows);
   const columnsRoot = convertToTree(pivotData.columns);
   const rows: string[][] = [];
-
-  const label = (original: string): React.ReactNode =>
-    (props.labelOverrides && props.labelOverrides[original]) || original;
 
   const visitRows = (root: Node, values: string[] = []) => {
     const { children, name } = root;
