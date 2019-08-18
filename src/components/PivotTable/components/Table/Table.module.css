@@ -50,21 +50,21 @@ Simple CSS reset for table styles.
 
 .topHeaderRow th {
   background: #022873;
-  color: #fff;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-.topHeaderRow:first-child th {
-  padding-top: 20px;
-}
-
-.topHeaderRow__secondary th {
   color: #98a8c6;
   font-size: 12px;
   text-transform: none;
   font-weight: normal;
-  padding-top: ;
+}
+
+.topHeaderRow__primary th {
+  text-transform: uppercase;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.topHeaderRow__primary:first-child th {
+  padding-top: 20px;
 }
 
 .topHeaderRow:last-child {
@@ -73,13 +73,6 @@ Simple CSS reset for table styles.
 
 .topHeaderRow .topHeaderCell__value {
   text-align: right;
-}
-
-.grandTotalRow th,
-.grandTotalRow td {
-  background: #333;
-  color: #fff;
-  font-weight: 600;
 }
 
 .totalRow {
@@ -98,21 +91,29 @@ Simple CSS reset for table styles.
   font-weight: 600;
 }
 
+.grandTotalRow th,
+.grandTotalRow td {
+  background: #333;
+  color: #fff;
+}
+
 .totalColumn th,
 .totalColumn td {
   font-weight: 600;
 }
-
+.table .headerColumn {
+  text-align: left;
+}
 .table .headerColumn__primary {
   font-weight: 600;
 }
 
-.regularRow:first-of-type th,
-.regularRow:first-of-type td {
+.row:first-of-type th,
+.row:first-of-type td {
   padding-top: 20px;
 }
 
-.regularRow:nth-last-of-type(2) th,
-.regularRow:nth-last-of-type(2) td {
+.row:nth-last-of-type(2) th,
+.row:nth-last-of-type(2) td {
   padding-bottom: 20px;
 }

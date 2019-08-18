@@ -11,6 +11,8 @@ export interface ManagerProps {
   columns: string[];
   aggregationType: AggregationTypes;
   valueProperty: string;
+  rowsLabel: React.ReactNode;
+  columnsLabel: React.ReactNode;
 }
 
 interface FetchDataFn {
@@ -50,6 +52,8 @@ export const TableManager: React.FC<ManagerProps> = props => {
         columns={props.columns}
         aggregationType={props.aggregationType}
         valueProperty={props.valueProperty}
+        rowsLabel={props.rowsLabel}
+        columnsLabel={props.columnsLabel}
       ></Table>
     );
   }

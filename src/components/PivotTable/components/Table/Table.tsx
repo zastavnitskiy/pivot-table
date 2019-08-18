@@ -14,7 +14,12 @@ import { ManagerProps } from "../Manager/Manager";
 export interface TableProps
   extends Pick<
     ManagerProps,
-    "aggregationType" | "valueProperty" | "rows" | "columns"
+    | "aggregationType"
+    | "valueProperty"
+    | "rows"
+    | "columns"
+    | "rowsLabel"
+    | "columnsLabel"
   > {
   data: DataRow[];
 }
@@ -39,154 +44,155 @@ export const Table: React.FC<TableProps> = props => {
 
   const rowsRoot = convertToTree(pivotData.rows);
   const columnsRoot = convertToTree(pivotData.columns);
-  const columns = Object.keys(columnsRoot.children).sort(sortWithTotals);
-  const categories = Object.keys(rowsRoot.children).sort(sortWithTotals);
+  const rows: string[][] = [];
 
-  const rowGroups: Node[] = [];
-  for (let category of categories) {
-    const categoryObj: Node = {
-      name: category,
-      children: {}
-    };
-
-    const subCategories = Object.keys(
-      rowsRoot.children[category].children
-    ).sort(sortWithTotals);
-
-    for (let subCategory of subCategories) {
-      const subCategoryObj: Node = {
-        name: subCategory,
-        children: {}
-      };
-      for (let state of columns) {
-        const stateObj: Node = {
-          name: state,
-          children: {},
-          value: pivotData.getValue([category, subCategory], [state])
-        };
-
-        subCategoryObj.children[state] = stateObj;
-      }
-
-      categoryObj.children[subCategory] = subCategoryObj;
+  const visitRows = (root: Node, values: string[] = []) => {
+    const { children, name } = root;
+    const childrenToVisit = Object.keys(children).sort(sortWithTotals);
+    if (!children || Object.keys(children).length === 0) {
+      rows.push([...values, name].slice(1));
     }
-    rowGroups.push(categoryObj);
+    for (let childKey of childrenToVisit) {
+      visitRows(children[childKey], [...values, name]);
+    }
+  };
+
+  visitRows(rowsRoot);
+
+  const columns: string[][] = [];
+
+  const visitColumns = (root: Node, values: string[] = []) => {
+    const { children, name } = root;
+    const childrenToVisit = Object.keys(children).sort(sortWithTotals);
+    if (!children || Object.keys(children).length === 0) {
+      columns.push([...values, name].slice(1));
+    }
+    for (let childKey of childrenToVisit) {
+      visitColumns(children[childKey], [...values, name]);
+    }
+  };
+
+  visitColumns(columnsRoot);
+
+  const tableMarkup: React.ReactElement[] = [];
+  const theadMarkup: React.ReactElement[] = [];
+
+  theadMarkup.push(
+    <tr
+      className={classnames(styles.topHeaderRow, styles.topHeaderRow__primary)}
+    >
+      <th colSpan={props.rows.length}>{props.rowsLabel}</th>
+      <th colSpan={columns.length}>{props.columnsLabel}</th>
+    </tr>
+  );
+
+  for (let i = 0; i < props.columns.length; i++) {
+    const rowData = [];
+    if (i === props.columns.length - 1) {
+      for (let k = 0; k < props.rows.length; k++) {
+        rowData.push(<th>{props.rows[k]}</th>);
+      }
+    } else {
+      for (let k = 0; k < props.rows.length; k++) {
+        rowData.push(<th></th>);
+      }
+    }
+
+    for (let column of columns) {
+      rowData.push(<th>{column[i] === "*" ? "Total" : column[i]}</th>);
+    }
+
+    theadMarkup.push(
+      <tr
+        className={classnames(
+          styles.topHeaderRow,
+          i > 0 && styles.topHeaderRow__secondary
+        )}
+      >
+        {rowData}
+      </tr>
+    );
   }
 
-  return (
-    <div>
-      <table className={styles.table}>
-        <thead>
-          <tr className={styles.topHeaderRow}>
-            <th colSpan={2}>Products</th>
-            <th colSpan={columns.length - 1}>States</th>
-            <th></th>
-          </tr>
-          <tr
+  tableMarkup.push(<thead>{theadMarkup}</thead>);
+
+  let tbodyRowGroupMarkup: React.ReactElement[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const previousRow = rows[i - 1];
+    const nextRow = rows[i + 1];
+    const rowData = [];
+
+    /** For each row we need to calculate several features
+     * to properly style it and select text
+     */
+    let isGrandTotalRow = true;
+    let isTotalRow = false;
+    let isSubCategoryAggregation =
+      row.lastIndexOf("*") >= 0 && row.lastIndexOf("*") !== row.length - 1;
+
+    let isFirstOfTopLevelCategory = !previousRow || previousRow[0] !== row[0];
+    let isLastOfTopLevelCategory = !nextRow || nextRow[0] !== row[0];
+
+    if (isSubCategoryAggregation) {
+      continue;
+    }
+
+    for (let rowValue of row) {
+      if (rowValue === "*") {
+        isTotalRow = true;
+      } else {
+        isGrandTotalRow = false;
+      }
+    }
+
+    if (isGrandTotalRow) {
+      rowData.push(<th colSpan={row.length}>Grand total</th>);
+    } else if (isTotalRow) {
+      rowData.push(
+        <th colSpan={row.length}>
+          {row.filter(rowValue => rowValue !== "*").join("-") + "   total"}
+        </th>
+      );
+    } else {
+      row.forEach((rowValue, index) => {
+        rowData.push(
+          <td
             className={classnames(
-              styles.topHeaderRow,
-              styles.topHeaderRow__secondary
+              styles.headerColumn,
+              index === 0
+                ? styles.headerColumn__primary
+                : styles.headerColumn__secondary
             )}
           >
-            <th>Category</th>
-            <th>Sub-Category</th>
-            {columns.map(columnHeader => (
-              <th
-                key={`column-header-${columnHeader}`}
-                className={styles.topHeaderCell__value}
-              >
-                {columnHeader === "*" ? "Grand Total" : columnHeader}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        {rowGroups.map(row => {
-          const category = row.name;
-          const rowChildren = Object.keys(row.children).sort(sortWithTotals);
+            {isFirstOfTopLevelCategory || index > 0 ? rowValue : ""}
+          </td>
+        );
+      });
+    }
 
-          return (
-            <tbody key={`row-group-${row.name}`}>
-              {rowChildren.map((subCategory, index) => {
-                const cells = [];
-                let rowClassname = styles.regularRow;
+    for (let column of columns) {
+      const value = pivotData.getValue(row, column) || 0;
+      rowData.push(<td>{formatNumber(value)}</td>);
+    }
 
-                /**
-                 * We also aggregate subcategories, e.g. categry=*, subcategory="soemthing"
-                 *
-                 * While in this data set this is not needed, I'll keep it on
-                 * the data level and only hide in presentation.
-                 */
+    tbodyRowGroupMarkup.push(
+      <tr
+        className={classnames(
+          isGrandTotalRow && styles.grandTotalRow,
+          isTotalRow ? styles.totalRow : styles.row
+        )}
+      >
+        {rowData}
+      </tr>
+    );
 
-                if (category === "*" && subCategory !== "*") {
-                  return null;
-                } else if (category === "*" && subCategory === "*") {
-                  /**
-                   * Grand Total Label
-                   */
-                  cells.push(
-                    <th key="Grand Total Header" colSpan={2}>
-                      Grand Total
-                    </th>
-                  );
-                  rowClassname = styles.grandTotalRow;
-                } else if (category !== "*" && subCategory === "*") {
-                  /**
-                   * Total labels for categories
-                   */
-                  cells.push(
-                    <th key={`${category} total header`} colSpan={2}>
-                      {category} total
-                    </th>
-                  );
-                  rowClassname = styles.totalRow;
-                } else if (index === 0) {
-                  /**
-                   * Group top level categories for multiple subcategory rows.
-                   */
-                  cells.push(
-                    <th
-                      key={category + "header"}
-                      rowSpan={rowChildren.length - 1}
-                      className={styles.headerColumn__primary}
-                    >
-                      {category}
-                    </th>,
-                    <th key={subCategory + "header"}>{subCategory}</th>
-                  );
-                } else {
-                  cells.push(
-                    <th key={subCategory + "header"}>{subCategory}</th>
-                  );
-                }
+    if (isLastOfTopLevelCategory) {
+      tableMarkup.push(<tbody>{tbodyRowGroupMarkup}</tbody>);
+      tbodyRowGroupMarkup = [];
+    }
+  }
 
-                /**
-                 * Finally display column values
-                 */
-                for (let state of Object.keys(
-                  row.children[subCategory].children
-                ).sort(sortWithTotals)) {
-                  cells.push(
-                    <td
-                      key={category + subCategory + state + "value"}
-                      className={state === "*" ? styles.totalColumn : ""}
-                    >
-                      {formatNumber(
-                        row.children[subCategory].children[state].value || 0
-                      )}
-                    </td>
-                  );
-                }
-
-                return (
-                  <tr key={subCategory + index} className={rowClassname}>
-                    {cells}
-                  </tr>
-                );
-              })}
-            </tbody>
-          );
-        })}
-      </table>
-    </div>
-  );
+  return <table className={styles.table}>{tableMarkup}</table>;
 };

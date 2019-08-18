@@ -23,9 +23,11 @@ function App() {
         tableName="Sum Sales"
         fetchData={fetchData}
         rows={["category", "subCategory"]}
-        columns={["state"]}
+        columns={["state", "segment"]}
         aggregationType="sum"
         valueProperty={"sales"}
+        rowsLabel="Products"
+        columnsLabel="States"
       />
     </div>
   );
