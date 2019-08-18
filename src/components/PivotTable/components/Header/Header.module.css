@@ -1,0 +1,16 @@
+.container {
+  padding: 10px 32px;
+  display: flex;
+  align-items: center;
+}
+
+.header {
+  text-transform: uppercase;
+  text-align: left;
+  margin: 0 32px 0 0;
+  padding: 0;
+}
+
+.inputs {
+  margin-left: auto;
+}

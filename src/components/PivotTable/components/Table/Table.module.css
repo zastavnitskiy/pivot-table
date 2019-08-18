@@ -33,7 +33,7 @@ Simple CSS reset for table styles.
 
 .table td,
 .table th {
-  padding: 10px 12px 10px 32px;
+  padding: 10px 12px 10px 20px;
   white-space: nowrap;
 }
 
@@ -55,11 +55,16 @@ Simple CSS reset for table styles.
   font-weight: bold;
 }
 
+.topHeaderRow:first-child th {
+  padding-top: 20px;
+}
+
 .topHeaderRow__secondary th {
   color: #98a8c6;
   font-size: 12px;
   text-transform: none;
   font-weight: normal;
+  padding-top: ;
 }
 
 .topHeaderRow:last-child {

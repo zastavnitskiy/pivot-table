@@ -1,1 +1,1 @@
-export { PivotTable } from "./PivotTable";
+export { Table } from "./components/Table/Table";

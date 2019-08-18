@@ -1,18 +1,20 @@
 import React from "react";
-import { Pivot } from "../../Pivot";
-import styles from "./PivotTable.module.css";
+import { Pivot } from "../../../../Pivot";
+import { Header } from "../Header/Header";
+import styles from "./Table.module.css";
 import {
   convertToTree,
   Node,
   sortWithTotals,
   classnames,
   formatNumber
-} from "./utilities";
+} from "../../utilities";
 interface DataRow {
   [key: string]: string | number;
 }
 
-interface PivotTableProps {
+export interface TableProps {
+  tableName: React.ReactNode;
   data: DataRow[];
 }
 interface CellData {
@@ -29,6 +31,87 @@ interface RowData {
 interface TableRowProps {
   row: any;
 }
+
+export const Table: React.FC<TableProps> = props => {
+  const pivotData = new Pivot(props.data, {
+    columns: ["state"],
+    rows: ["category", "subCategory"],
+    aggregationType: "sum",
+    value: "sales"
+  });
+
+  const rowsRoot = convertToTree(pivotData.rows);
+  const columnsRoot = convertToTree(pivotData.columns);
+  const columns = Object.keys(columnsRoot.children).sort(sortWithTotals);
+  const categories = Object.keys(rowsRoot.children).sort(sortWithTotals);
+
+  const rowGroups: Node[] = [];
+  for (let category of categories) {
+    const categoryObj: Node = {
+      name: category,
+      children: {}
+    };
+
+    const subCategories = Object.keys(
+      rowsRoot.children[category].children
+    ).sort(sortWithTotals);
+
+    for (let subCategory of subCategories) {
+      const subCategoryObj: Node = {
+        name: subCategory,
+        children: {}
+      };
+      for (let state of columns) {
+        const stateObj: Node = {
+          name: state,
+          children: {},
+          value: pivotData.getValue([category, subCategory], [state])
+        };
+
+        subCategoryObj.children[state] = stateObj;
+      }
+
+      categoryObj.children[subCategory] = subCategoryObj;
+    }
+    rowGroups.push(categoryObj);
+  }
+
+  return (
+    <div>
+      <Header {...props}> </Header>
+      <table className={styles.table}>
+        <thead>
+          <tr className={styles.topHeaderRow}>
+            <th colSpan={2}>Products</th>
+            <th colSpan={columns.length - 1}>States</th>
+            <th></th>
+          </tr>
+          <tr
+            className={classnames(
+              styles.topHeaderRow,
+              styles.topHeaderRow__secondary
+            )}
+          >
+            <th>Category</th>
+            <th>Sub-Category</th>
+            {columns.map(columnHeader => (
+              <th
+                key={`column-header-${columnHeader}`}
+                className={styles.topHeaderCell__value}
+              >
+                {columnHeader === "*" ? "Grand Total" : columnHeader}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        {rowGroups.map(rowGroup => (
+          <TableGroup key={`row-group-${rowGroup.name}`} row={rowGroup} />
+        ))}
+      </table>
+    </div>
+  );
+};
+
 const TableGroup: React.FC<TableRowProps> = props => {
   const { row } = props;
   const category = row.name;
@@ -112,84 +195,5 @@ const TableGroup: React.FC<TableRowProps> = props => {
         );
       })}
     </tbody>
-  );
-};
-
-export const PivotTable: React.FC<PivotTableProps> = props => {
-  const pivotData = new Pivot(props.data, {
-    columns: ["state"],
-    rows: ["category", "subCategory"],
-    aggregationType: "sum",
-    value: "sales"
-  });
-
-  const rowsRoot = convertToTree(pivotData.rows);
-  const columnsRoot = convertToTree(pivotData.columns);
-  const columns = Object.keys(columnsRoot.children).sort(sortWithTotals);
-  const categories = Object.keys(rowsRoot.children).sort(sortWithTotals);
-
-  const rowGroups: Node[] = [];
-  for (let category of categories) {
-    const categoryObj: Node = {
-      name: category,
-      children: {}
-    };
-
-    const subCategories = Object.keys(
-      rowsRoot.children[category].children
-    ).sort(sortWithTotals);
-
-    for (let subCategory of subCategories) {
-      const subCategoryObj: Node = {
-        name: subCategory,
-        children: {}
-      };
-      for (let state of columns) {
-        const stateObj: Node = {
-          name: state,
-          children: {},
-          value: pivotData.getValue([category, subCategory], [state])
-        };
-
-        subCategoryObj.children[state] = stateObj;
-      }
-
-      categoryObj.children[subCategory] = subCategoryObj;
-    }
-    rowGroups.push(categoryObj);
-  }
-
-  return (
-    <div>
-      <table className={styles.table}>
-        <thead>
-          <tr className={styles.topHeaderRow}>
-            <th colSpan={2}>Products</th>
-            <th colSpan={columns.length - 1}>States</th>
-            <th></th>
-          </tr>
-          <tr
-            className={classnames(
-              styles.topHeaderRow,
-              styles.topHeaderRow__secondary
-            )}
-          >
-            <th>Category</th>
-            <th>Sub-Category</th>
-            {columns.map(columnHeader => (
-              <th
-                key={`column-header-${columnHeader}`}
-                className={styles.topHeaderCell__value}
-              >
-                {columnHeader === "*" ? "Grand Total" : columnHeader}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        {rowGroups.map(rowGroup => (
-          <TableGroup key={`row-group-${rowGroup.name}`} row={rowGroup} />
-        ))}
-      </table>
-    </div>
   );
 };
