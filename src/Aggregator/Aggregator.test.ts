@@ -7,11 +7,11 @@ describe("AggregationClass", () => {
   it("should aggregate", () => {
     const aggregation = new Aggregator({
       data: data,
-      dimensions: ["category", "subCategory"],
+      dimensions: ["category", "subCategory", "state"],
       value: "sales",
       aggregationType: "sum"
     });
-    expect(aggregation.groups()).toHaveLength(9);
+    expect(aggregation.groups()).toHaveLength(19);
   });
 
   it("should aggregate big data", () => {

@@ -20,9 +20,9 @@ interface RowData {
 }
 
 const sortPivotValueArrays = (valueArray: string[][]): string[][] => {
-  return valueArray.sort((valueArray1: string[], valueArray2: string[]) =>
-    valueArray1.join("_").localeCompare(valueArray2.join("_"))
-  );
+  return valueArray.sort((valueArray1: string[], valueArray2: string[]) => {
+    return valueArray1.join("_").localeCompare(valueArray2.join("_"));
+  });
 };
 
 export const PivotTable: React.FC<PivotTableProps> = props => {
@@ -33,10 +33,10 @@ export const PivotTable: React.FC<PivotTableProps> = props => {
     value: "sales"
   });
 
+  //group data into category groups
+
   const columns = sortPivotValueArrays(pivotData.columns);
-  const rows = sortPivotValueArrays(pivotData.rows).filter(
-    values => values[0] !== "*" || (values[0] === "*" && values[1] === "*")
-  );
+  const rows = sortPivotValueArrays(pivotData.rows);
 
   const tableData: RowData[] = [
     {
@@ -87,10 +87,61 @@ export const PivotTable: React.FC<PivotTableProps> = props => {
     }
     tableData.push(row);
   }
+  console.timeEnd("Pivot Render");
 
   return (
     <div>
       Table comes here
+      {/* <table className={styles.table}>
+        <col />
+        <col />
+        <colgroup span={3} />
+        <thead>
+          <tr>
+            <th scope="col" />
+            <th scope="col" />
+            <th colSpan={3}>States</th>
+          </tr>
+          <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Sub-Category</th>
+            <th>Alabama</th>
+            <th>California</th>
+            <th>New York</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th rowSpan={3} scope="rowgroup">
+              Furniture
+            </th>
+            <th scope="row">Bookcases</th>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+          </tr>
+          <tr>
+            <th scope="row">Chairs</th>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+          </tr>
+          <tr>
+            <th scope="row">Furnishings</th>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+          </tr>
+          <tr className={styles.total}>
+            <th scope="row" colSpan={2}>
+              Total Furniture
+            </th>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+          </tr>
+        </tbody>
+      </table> */}
       <table>
         <tbody>
           {tableData.map(rowData => (

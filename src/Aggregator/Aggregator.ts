@@ -1,9 +1,9 @@
 import { aggregationFunctions } from "./aggregationFunctions";
 import { AggregationTypes } from "./";
-
+import { dimensionGroupsForEntry, dimensionsGroupKey } from "./utilities";
 export type DimensionKeys = string[];
 
-interface DimensionValues {
+export interface DimensionValues {
   [key: string]: number | string;
 }
 
@@ -12,55 +12,12 @@ export interface DimensionsGroup {
   value: number;
 }
 
-interface AggregationEntry {
+export interface AggregationEntry {
   [key: string]: number | string;
 }
 
 interface AggregationFn {
   (entries: number[]): number;
-}
-
-function dimensionsGroupKey(dimensions: DimensionValues): string {
-  return Object.keys(dimensions)
-    .reduce((result: string[], key) => {
-      result.push(`${key}:${dimensions[key]}`);
-      return result;
-    }, [])
-    .join("__");
-}
-
-function dimensionGroupsForEntry(
-  dimensionsKeys: DimensionKeys,
-  entry: AggregationEntry
-): DimensionValues[] {
-  const dimensionValues = dimensionsKeys.reduce(
-    (dimensions: DimensionValues, key: string): DimensionValues => {
-      dimensions[key] = entry[key];
-      return dimensions;
-    },
-    {}
-  );
-
-  const result = [dimensionValues];
-
-  for (let key of dimensionsKeys) {
-    result.push({
-      ...dimensionValues,
-      [key]: "*"
-    });
-  }
-
-  result.push(
-    dimensionsKeys.reduce(
-      (dimensions: DimensionValues, key: string): DimensionValues => {
-        dimensions[key] = "*";
-        return dimensions;
-      },
-      {}
-    )
-  );
-
-  return result;
 }
 
 interface AggregatorProps {
