@@ -1,6 +1,7 @@
 import React from "react";
 import { Pivot } from "../../Pivot";
 import styles from "./PivotTable.module.css";
+import { convertToTree, Node, sortWithTotals } from "./utilities";
 interface DataRow {
   [key: string]: string | number;
 }
@@ -19,10 +20,65 @@ interface RowData {
   cells: CellData[];
 }
 
-const sortPivotValueArrays = (valueArray: string[][]): string[][] => {
-  return valueArray.sort((valueArray1: string[], valueArray2: string[]) => {
-    return valueArray1.join("_").localeCompare(valueArray2.join("_"));
-  });
+interface TableRowProps {
+  row: any;
+}
+const TableGroup: React.FC<TableRowProps> = props => {
+  const { row } = props;
+  const category = row.name;
+  const rowChildren = Object.keys(row.children).sort(sortWithTotals);
+
+  return (
+    <tbody>
+      {rowChildren.map((subCategory, index) => {
+        const cells = [];
+
+        /**
+         * We also aggregate subcategories, e.g. categry=*, subcategory="soemthing"
+         *
+         * While in this data set this is not needed, I'll keep it on
+         * the data level and only hide in presentation.
+         */
+
+        if (category === "*" && subCategory !== "*") {
+          return null;
+        } else if (category === "*" && subCategory === "*") {
+          /**
+           * Grand Total Label
+           */
+          cells.push(<th colSpan={2}>Grand Total</th>);
+        } else if (category !== "*" && subCategory === "*") {
+          /**
+           * Total labels for categories
+           */
+          cells.push(<th colSpan={2}>{category} total</th>);
+        } else if (index === 0) {
+          /**
+           * Group top level categories for multiple subcategory rows.
+           */
+          cells.push(
+            <th rowSpan={rowChildren.length - 1}>{category}</th>,
+            <th>{subCategory}</th>
+          );
+        } else {
+          cells.push(<th>{subCategory}</th>);
+        }
+
+        /**
+         * Finally display column values
+         */
+        for (let state of Object.keys(row.children[subCategory].children).sort(
+          sortWithTotals
+        )) {
+          cells.push(
+            <td>{row.children[subCategory].children[state].value || 0}</td>
+          );
+        }
+
+        return <tr>{cells}</tr>;
+      })}
+    </tbody>
+  );
 };
 
 export const PivotTable: React.FC<PivotTableProps> = props => {
@@ -33,133 +89,62 @@ export const PivotTable: React.FC<PivotTableProps> = props => {
     value: "sales"
   });
 
-  //group data into category groups
+  const rowsRoot = convertToTree(pivotData.rows);
+  const columnsRoot = convertToTree(pivotData.columns);
+  const columns = Object.keys(columnsRoot.children).sort(sortWithTotals);
+  const categories = Object.keys(rowsRoot.children).sort(sortWithTotals);
 
-  const columns = sortPivotValueArrays(pivotData.columns);
-  const rows = sortPivotValueArrays(pivotData.rows);
-
-  const tableData: RowData[] = [
-    {
-      cells: [
-        { colSpan: rows[0].length },
-        { colSpan: columns.length, value: "States" }
-      ]
-    },
-    {
-      cells: [
-        { colSpan: rows[0].length },
-        ...columns.map(value => ({
-          value: value[0] === "*" ? "Grand Total" : value
-        }))
-      ]
-    }
-  ];
-
-  for (let rowValues of rows) {
-    const rowHeaderCells = [];
-
-    if (rowValues.filter(value => value !== "*").length) {
-      rowHeaderCells.push(
-        ...rowValues.map(value => ({
-          value: value === "*" ? "Total" : value,
-          className: value === "*" ? styles.heading : ""
-        }))
-      );
-    } else {
-      rowHeaderCells.push({
-        value: "Grand Total",
-        className: styles.heading,
-        colSpan: rowValues.length
-      });
-    }
-
-    const row: RowData = {
-      cells: [...rowHeaderCells]
+  const rowGroups: Node[] = [];
+  for (let category of categories) {
+    const categoryObj: Node = {
+      name: category,
+      children: {}
     };
 
-    for (let columnValues of columns) {
-      row.cells.push({
-        value: pivotData.getValue(rowValues, columnValues) || 0,
-        className: [...rowValues, ...columnValues].find(value => value === "*")
-          ? styles.heading
-          : ""
-      });
+    const subCategories = Object.keys(
+      rowsRoot.children[category].children
+    ).sort(sortWithTotals);
+
+    for (let subCategory of subCategories) {
+      const subCategoryObj: Node = {
+        name: subCategory,
+        children: {}
+      };
+      for (let state of columns) {
+        const stateObj: Node = {
+          name: state,
+          children: {},
+          value: pivotData.getValue([category, subCategory], [state])
+        };
+
+        subCategoryObj.children[state] = stateObj;
+      }
+
+      categoryObj.children[subCategory] = subCategoryObj;
     }
-    tableData.push(row);
+    rowGroups.push(categoryObj);
   }
-  console.timeEnd("Pivot Render");
 
   return (
     <div>
-      Table comes here
-      {/* <table className={styles.table}>
-        <col />
-        <col />
-        <colgroup span={3} />
+      <table className={styles.table}>
         <thead>
           <tr>
-            <th scope="col" />
-            <th scope="col" />
-            <th colSpan={3}>States</th>
+            <th colSpan={2}>Products</th>
+            <th colSpan={columns.length - 1}>States</th>
+            <th></th>
           </tr>
           <tr>
-            <th scope="col">Category</th>
-            <th scope="col">Sub-Category</th>
-            <th>Alabama</th>
-            <th>California</th>
-            <th>New York</th>
+            <th>Category</th>
+            <th>Sub-Category</th>
+            {columns.map(columnHeader => (
+              <th>{columnHeader === "*" ? "Grand Total" : columnHeader}</th>
+            ))}
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <th rowSpan={3} scope="rowgroup">
-              Furniture
-            </th>
-            <th scope="row">Bookcases</th>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-          </tr>
-          <tr>
-            <th scope="row">Chairs</th>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-          </tr>
-          <tr>
-            <th scope="row">Furnishings</th>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-          </tr>
-          <tr className={styles.total}>
-            <th scope="row" colSpan={2}>
-              Total Furniture
-            </th>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-          </tr>
-        </tbody>
-      </table> */}
-      <table>
-        <tbody>
-          {tableData.map(rowData => (
-            <tr>
-              {rowData.cells.map(
-                (cellData): React.ReactElement => (
-                  <td
-                    colSpan={cellData.colSpan}
-                    rowSpan={cellData.rowSpan}
-                    className={cellData.className}
-                  >
-                    {cellData.value}
-                  </td>
-                )
-              )}
-            </tr>
-          ))}
-        </tbody>
+        {rowGroups.map(rowGroup => (
+          <TableGroup row={rowGroup} />
+        ))}
       </table>
     </div>
   );
