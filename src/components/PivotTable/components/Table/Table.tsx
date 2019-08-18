@@ -37,7 +37,7 @@ export const Table: React.FC<TableProps> = props => {
   const rows: string[][] = [];
 
   const label = (original: string): React.ReactNode =>
-    props.labelOverrides[original] || original;
+    (props.labelOverrides && props.labelOverrides[original]) || original;
 
   const visitRows = (root: Node, values: string[] = []) => {
     const { children, name } = root;

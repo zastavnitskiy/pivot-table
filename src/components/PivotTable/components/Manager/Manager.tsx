@@ -8,15 +8,48 @@ interface TextOverrides {
   [key: string]: React.ReactNode;
 }
 export interface ManagerProps {
-  tableName: string;
+  /**
+   * Table Name
+   */
+  tableName: React.ReactNode;
+  /**
+   * Async function that returns the data. Can be a wrapper
+   * around fetch, axios or any other backend client.
+   */
   fetchData: FetchDataFn;
+  /**
+   * List of row Dimensions.
+   */
   rows: string[];
+  /**
+   * List of column Dimensions.
+   */
   columns: string[];
+  /**
+   * Aggregation type..
+   *
+   * For now, only 'sum' is supported.
+   */
   aggregationType: AggregationTypes;
+  /**
+   * Metric to aggregate.
+   * For now, we only support a single metric of number type.
+   */
   valueProperty: string;
-  rowsLabel: React.ReactNode;
-  columnsLabel: React.ReactNode;
-  labelOverrides: TextOverrides;
+
+  /**
+   * Header of row dimension columns, e.g. Products
+   */
+  rowsLabel?: React.ReactNode;
+  /**
+   * Header of metric columns, e.g. States
+   */
+  columnsLabel?: React.ReactNode;
+  /**
+   * Overrides for data entry property names:
+   * subCategories → Sub-Categories
+   */
+  labelOverrides?: TextOverrides;
 }
 
 interface FetchDataFn {

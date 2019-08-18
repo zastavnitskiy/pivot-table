@@ -6,6 +6,6 @@ type HeaderProps = Pick<ManagerProps, "tableName">;
 export const Header: React.FC<HeaderProps> = props => (
   <div className={styles.container}>
     <h1 className={styles.header}>{props.tableName}</h1>
-    <div className={styles.inputs}>Density(to be implemnted)</div>
+    {/* Table configuration can be added here */}
   </div>
 );
