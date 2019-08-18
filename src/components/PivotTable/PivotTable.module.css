@@ -9,3 +9,15 @@
 .table td {
   outline: 1px solid salmon;
 }
+
+.grandTotalRow {
+  color: red;
+}
+
+.totalRow {
+  color: blue;
+}
+
+.totalColumn {
+  color: green;
+}

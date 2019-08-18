@@ -32,6 +32,7 @@ const TableGroup: React.FC<TableRowProps> = props => {
     <tbody>
       {rowChildren.map((subCategory, index) => {
         const cells = [];
+        let rowClassname = "";
 
         /**
          * We also aggregate subcategories, e.g. categry=*, subcategory="soemthing"
@@ -46,22 +47,34 @@ const TableGroup: React.FC<TableRowProps> = props => {
           /**
            * Grand Total Label
            */
-          cells.push(<th colSpan={2}>Grand Total</th>);
+          cells.push(
+            <th key="Grand Total Header" colSpan={2}>
+              Grand Total
+            </th>
+          );
+          rowClassname = styles.grandTotalRow;
         } else if (category !== "*" && subCategory === "*") {
           /**
            * Total labels for categories
            */
-          cells.push(<th colSpan={2}>{category} total</th>);
+          cells.push(
+            <th key={`${category} total header`} colSpan={2}>
+              {category} total
+            </th>
+          );
+          rowClassname = styles.totalRow;
         } else if (index === 0) {
           /**
            * Group top level categories for multiple subcategory rows.
            */
           cells.push(
-            <th rowSpan={rowChildren.length - 1}>{category}</th>,
-            <th>{subCategory}</th>
+            <th key={category + "header"} rowSpan={rowChildren.length - 1}>
+              {category}
+            </th>,
+            <th key={subCategory + "header"}>{subCategory}</th>
           );
         } else {
-          cells.push(<th>{subCategory}</th>);
+          cells.push(<th key={subCategory + "header"}>{subCategory}</th>);
         }
 
         /**
@@ -71,11 +84,20 @@ const TableGroup: React.FC<TableRowProps> = props => {
           sortWithTotals
         )) {
           cells.push(
-            <td>{row.children[subCategory].children[state].value || 0}</td>
+            <td
+              key={category + subCategory + state + "value"}
+              className={state === "*" ? styles.totalColumn : ""}
+            >
+              {row.children[subCategory].children[state].value || 0}
+            </td>
           );
         }
 
-        return <tr>{cells}</tr>;
+        return (
+          <tr key={subCategory + index} className={rowClassname}>
+            {cells}
+          </tr>
+        );
       })}
     </tbody>
   );
@@ -138,12 +160,14 @@ export const PivotTable: React.FC<PivotTableProps> = props => {
             <th>Category</th>
             <th>Sub-Category</th>
             {columns.map(columnHeader => (
-              <th>{columnHeader === "*" ? "Grand Total" : columnHeader}</th>
+              <th key={`column-header-${columnHeader}`}>
+                {columnHeader === "*" ? "Grand Total" : columnHeader}
+              </th>
             ))}
           </tr>
         </thead>
         {rowGroups.map(rowGroup => (
-          <TableGroup row={rowGroup} />
+          <TableGroup key={`row-group-${rowGroup.name}`} row={rowGroup} />
         ))}
       </table>
     </div>
