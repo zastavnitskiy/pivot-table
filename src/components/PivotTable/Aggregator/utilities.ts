@@ -1,4 +1,4 @@
-import { DimensionKeys, AggregationEntry, DimensionValues } from "./Aggregator";
+import { DimensionKeys, DataEntry, DimensionValues } from "./Aggregator";
 /**
  * Generate dimension keys pemutations
  *
@@ -38,7 +38,7 @@ export function dimensionKeyPermutations(dimensionsKeys: string[]): string[][] {
  */
 export function dimensionGroupsForEntry(
   dimensionsKeys: DimensionKeys,
-  entry: AggregationEntry
+  entry: DataEntry
 ): DimensionValues[] {
   const dimensionKeyGroups = dimensionKeyPermutations(dimensionsKeys);
 

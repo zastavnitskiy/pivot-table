@@ -12,7 +12,7 @@ export interface DimensionsGroup {
   value: number;
 }
 
-export interface AggregationEntry {
+export interface DataEntry {
   [key: string]: number | string;
 }
 
@@ -20,14 +20,14 @@ interface AggregationFn {
   (entries: number[]): number;
 }
 
-interface AggregatorProps {
-  data: AggregationEntry[];
+interface AggregatorConfig {
+  data: DataEntry[];
   dimensions: string[];
   value: string;
   aggregationType: AggregationTypes;
 }
 export class Aggregator {
-  constructor(config: AggregatorProps) {
+  constructor(config: AggregatorConfig) {
     const { data, dimensions, value, aggregationType } = config;
     this._dimensions = dimensions;
     this._groups = new Map();
@@ -40,9 +40,8 @@ export class Aggregator {
   private _groups: Map<String, AggregationGroup>;
   private _value: string;
 
-  private addEntry(entry: AggregationEntry) {
+  private addEntry(entry: DataEntry) {
     const dimensionGroups = dimensionGroupsForEntry(this._dimensions, entry);
-
     for (let dimensionGroup of dimensionGroups) {
       const key = dimensionsGroupKey(dimensionGroup);
       const group = this._groups.get(key);
@@ -66,8 +65,8 @@ export class Aggregator {
   }
 }
 class AggregationGroup {
-  private _entries: AggregationEntry[];
-  public constructor(entry: AggregationEntry, dimensions: DimensionValues) {
+  private _entries: DataEntry[];
+  public constructor(entry: DataEntry, dimensions: DimensionValues) {
     this._entries = [];
     this.dimensions = dimensions;
     this.addEntry(entry);
@@ -75,7 +74,7 @@ class AggregationGroup {
 
   public dimensions: DimensionValues;
 
-  public addEntry(entry: AggregationEntry) {
+  public addEntry(entry: DataEntry) {
     this._entries.push(entry);
   }
 
