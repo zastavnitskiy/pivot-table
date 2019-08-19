@@ -1,4 +1,4 @@
-Pivot table demo.
+Pivot table demo. View online https://pivot-table.netlify.com/
 
 # Features
 
@@ -12,8 +12,6 @@ The application is bootstrapped with Creat-react-app.
 
 - `yarn install`
 - `yarn start`
-
-The latest version is deployed to https://pivot-table.netlify.com/
 
 # Architecture Overview
 
