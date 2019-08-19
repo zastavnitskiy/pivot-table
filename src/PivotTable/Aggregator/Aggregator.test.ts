@@ -1,7 +1,7 @@
-import { Aggregator } from ".";
+import { Aggregator } from "../Aggregator";
 
-import data from "../../../mockedData/small-subset.json";
-import fullData from "../../../mockedData/sales-orders.json";
+import data from "../../mockedData/small-subset.json";
+import fullData from "../../mockedData/sales-orders.json";
 
 describe("AggregationClass", () => {
   it("should aggregate", () => {

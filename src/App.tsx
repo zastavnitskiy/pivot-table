@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import PivotTable from "./components/PivotTable";
+import PivotTable from "./PivotTable";
 import data from "./mockedData/sales-orders.json";
 
 const sleep = async (ms: number) =>

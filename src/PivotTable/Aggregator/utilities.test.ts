@@ -1,7 +1,7 @@
 import { dimensionGroupsForEntry, dimensionKeyPermutations } from "./utilities";
 
-import data from "../../../mockedData/small-subset.json";
-import fullData from "../../../mockedData/sales-orders.json";
+import data from "../../mockedData/small-subset.json";
+import fullData from "../../mockedData/sales-orders.json";
 
 describe("utilities", () => {
   describe("dimensionKeyPermutations", () => {

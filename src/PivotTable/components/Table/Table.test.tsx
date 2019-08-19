@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Table } from "./Table";
-import data from "../../../../mockedData/small-subset.json";
+import data from "../../../mockedData/small-subset.json";
 import renderer from "react-test-renderer";
 
 it("renders without crashing", () => {
