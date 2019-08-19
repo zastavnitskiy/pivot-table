@@ -27,11 +27,11 @@ Core logic of the component(aggreation and pivoting) is separated from the React
 
 [`PivotTable/components/Table`](src/components/PivotTable/components/Table/Table.tsx)
 
-2. ↓(raw data) 5. ↑(rows, columns, values)
+2. ↓(raw data) | 5. ↑(rows, columns, values)
 
 [`PivotTable/Pivot`](src/components/PivotTable/Pivot/Pivot.ts)
 
-3. ↓(raw data) 4. ↑(aggregated data)
+3. ↓(raw data) | 4. ↑(aggregated data)
 
 [`PivotTable/Aggregator`](src/components/PivotTable/Aggregator)
 
