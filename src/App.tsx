@@ -19,14 +19,44 @@ function App() {
   return (
     <div className="App">
       <PivotTable
+        /** Table name */
         tableName="Sum Sales"
+        /** Async function that returns data.
+         * Can be a wrapper around fetch, axios or any
+         * backend service
+         */
         fetchData={fetchData}
+        /**
+         * Row dimensions
+         */
         rows={["category", "subCategory"]}
+        /**
+         * Column dimensions
+         */
         columns={["state"]}
+        /**
+         * Aggregation type.
+         *
+         * Supported values are sum, min, max.
+         */
         aggregationType="sum"
+        /**
+         * Matric name that we will use for aggregation.
+         */
         valueProperty={"sales"}
+        /**
+         * Header of the row dimension columns.
+         */
         rowsLabel="Products"
+        /**
+         * Header of the column dimension columns.
+         */
         columnsLabel="States"
+        /**
+         * Overrides of the row dimension names,
+         * allowes nice user facing labels:
+         * subCategory → Sub-Category
+         */
         labelOverrides={{
           category: "Category",
           subCategory: "Sub-Category"
