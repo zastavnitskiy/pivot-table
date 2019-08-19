@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { DataRow } from "../../types";
+import { DataEntry } from "../../index";
 import { Header } from "../Header/Header";
-import { Table } from "../Table/Table";
-import { AggregationTypes } from "../../Aggregator";
+import { Table, TableProps } from "../Table/Table";
 
-interface TextOverrides {
-  [key: string]: React.ReactNode;
+interface FetchDataFn {
+  (): Promise<DataEntry[]>;
 }
-export interface ManagerProps {
+
+export interface ManagerProps extends Omit<TableProps, "data"> {
   /**
    * Table Name
    */
@@ -17,48 +17,11 @@ export interface ManagerProps {
    * around fetch, axios or any other backend client.
    */
   fetchData: FetchDataFn;
-  /**
-   * List of row Dimensions.
-   */
-  rows: string[];
-  /**
-   * List of column Dimensions.
-   */
-  columns: string[];
-  /**
-   * Aggregation type..
-   *
-   * For now, only 'sum' is supported.
-   */
-  aggregationType: AggregationTypes;
-  /**
-   * Metric to aggregate.
-   * For now, we only support a single metric of number type.
-   */
-  valueProperty: string;
-
-  /**
-   * Header of row dimension columns, e.g. Products
-   */
-  rowsLabel?: React.ReactNode;
-  /**
-   * Header of metric columns, e.g. States
-   */
-  columnsLabel?: React.ReactNode;
-  /**
-   * Overrides for data entry property names:
-   * subCategories → Sub-Categories
-   */
-  labelOverrides?: TextOverrides;
-}
-
-interface FetchDataFn {
-  (): Promise<DataRow[]>;
 }
 
 export const TableManager: React.FC<ManagerProps> = props => {
   const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState<DataRow[] | null>(null);
+  const [data, setData] = useState<DataEntry[] | null>(null);
   const { fetchData } = props;
 
   useEffect(() => {

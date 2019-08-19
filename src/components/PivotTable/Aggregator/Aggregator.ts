@@ -1,8 +1,8 @@
 import { aggregationFunctions } from "./aggregationFunctions";
-import { AggregationTypes } from ".";
 import { dimensionGroupsForEntry, dimensionsGroupKey } from "./utilities";
-export type DimensionKeys = string[];
+import { AggregationTypes, DataEntry } from "../index";
 
+export type DimensionKeys = string[];
 export interface DimensionValues {
   [key: string]: number | string;
 }
@@ -10,10 +10,6 @@ export interface DimensionValues {
 export interface DimensionsGroup {
   dimensions: DimensionValues;
   value: number;
-}
-
-export interface DataEntry {
-  [key: string]: number | string;
 }
 
 interface AggregationFn {

@@ -1,25 +1,15 @@
-import { Aggregator, AggregationTypes } from "../Aggregator";
+import { Aggregator } from "../Aggregator/Aggregator";
 import { sortDimensions } from "../utilities";
-
-interface PivotConfig {
-  rows: string[];
-  columns: string[];
-  aggregationType: AggregationTypes;
-  value: string;
-}
-
-export interface DataRow {
-  [key: string]: number | string;
-}
+import { PivotConfig, DataEntry } from "../index";
 
 export class Pivot {
-  public constructor(data: DataRow[], config: PivotConfig) {
+  public constructor(data: DataEntry[], config: PivotConfig) {
     const dimensions = [...config.columns, ...config.rows];
     const aggregation = new Aggregator({
       data,
       dimensions,
-      value: config.value,
-      aggregationType: "sum"
+      value: config.valueProperty,
+      aggregationType: config.aggregationType
     });
 
     const aggregated = aggregation.groups();

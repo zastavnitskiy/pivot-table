@@ -7,7 +7,7 @@ describe("Pivot class", () => {
       columns: ["state"],
       rows: ["category", "subCategory"],
       aggregationType: "sum",
-      value: "sales"
+      valueProperty: "sales"
     });
 
     expect(pivotData.rows).toHaveLength(9);
@@ -25,7 +25,7 @@ describe("Pivot class", () => {
       columns: ["state"],
       rows: ["category", "subCategory"],
       aggregationType: "sum",
-      value: "sales"
+      valueProperty: "sales"
     });
 
     expect(pivotData.rows).toMatchInlineSnapshot(`

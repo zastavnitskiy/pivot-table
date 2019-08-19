@@ -1,4 +1,5 @@
-import { DimensionKeys, DataEntry, DimensionValues } from "./Aggregator";
+import { DataEntry } from "../index";
+import { DimensionKeys, DimensionValues } from "./Aggregator";
 /**
  * Generate dimension keys pemutations
  *

@@ -2,21 +2,24 @@ import React from "react";
 import { Pivot } from "../../Pivot";
 import styles from "./Table.module.css";
 import { classnames, formatNumber } from "../../utilities";
-import { DataRow } from "../../types";
-import { ManagerProps } from "../Manager/Manager";
-
-export interface TableProps
-  extends Pick<
-    ManagerProps,
-    | "aggregationType"
-    | "valueProperty"
-    | "rows"
-    | "columns"
-    | "rowsLabel"
-    | "columnsLabel"
-    | "labelOverrides"
-  > {
-  data: DataRow[];
+import { PivotConfig, DataEntry } from "../../index";
+export interface TableProps extends PivotConfig {
+  data: DataEntry[];
+  /**
+   * Header of row dimension columns, e.g. Products
+   */
+  rowsLabel?: React.ReactNode;
+  /**
+   * Header of metric columns, e.g. States
+   */
+  columnsLabel?: React.ReactNode;
+  /**
+   * Overrides for data entry property names:
+   * subCategories → Sub-Categories
+   */
+  labelOverrides?: {
+    [key: string]: React.ReactNode;
+  };
 }
 
 /**
@@ -37,7 +40,7 @@ export const Table: React.FC<TableProps> = props => {
     columns: props.columns,
     rows: props.rows,
     aggregationType: props.aggregationType,
-    value: props.valueProperty //todo rename value property in Pivot and Aggregator
+    valueProperty: props.valueProperty //todo rename value property in Pivot and Aggregator
   });
 
   const rows = pivotData.rows;
