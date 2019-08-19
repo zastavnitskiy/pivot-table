@@ -1,5 +1,4 @@
 import React from "react";
-import "./App.css";
 import PivotTable from "./PivotTable";
 import data from "./mockedData/sales-orders.json";
 
