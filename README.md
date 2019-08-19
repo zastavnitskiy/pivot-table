@@ -27,7 +27,7 @@ Manager (depends on) → Table → Pivot → Aggregator
 
 ## Components and Classes
 
-### `PivotTable/components/Manager`
+### [`PivotTable/components/Manager`](src/components/PivotTable/components/Manager/Manager.tsx)
 
 This component handles the state of the pivot table. It will fetch the data, keep track of loading state and error handling.
 
@@ -35,13 +35,13 @@ In the future, this component will also keep the state of the form toggles(dark 
 
 `PivotTable/components/Manager` fetches the data and then renders `PivotTable/components/Table`
 
-### `PivotTable/components/Table`
+### [`PivotTable/components/Table`](src/components/PivotTable/components/Table/Table.tsx)
 
 `PivotTable/components/Table` is a stateless component that implements table UI.
 
 It receives raw data as props, does data processing using `Pivot` class, and then renders table nicely.
 
-### `PivotTable/Pivot`
+### [`PivotTable/Pivot`](src/components/PivotTable/Pivot/Pivot.ts)
 
 `PivotTable/Pivot` is a class that does data processing:
 First, it uses `PivotTable/Aggregator` to aggregate the data and then does another data transformation to create rows, columns and values.
@@ -50,9 +50,11 @@ Important architecture boundary — this class is not aware of anything UI speci
 
 This boundary allows us to reuse this class in the other applications if needed — for example, build a Vue version of Pivot Table, or integrate it into a command-line application.
 
-### `PivotTable/Aggregator`
+### [`PivotTable/Aggregator`](src/components/PivotTable/Aggregator)
 
 This class does data aggregation. It is not aware of Pivot specifics, like rows and columns — it only operates with metrics and dimensions.
+
+Aggregator also contains [aggregation functions](src/components/PivotTable/Aggregator/aggregationFunctions.ts).
 
 It can easily be part of Pivot class itself, but separating it simplifies testing and makes each piece easier to understand.
 
