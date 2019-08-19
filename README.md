@@ -17,6 +17,8 @@ The latest version is deployed to https://pivot-table.netlify.com/
 
 # Architecture Overview
 
+Core logic of the component(aggreation and pivoting) is separated from the React UI layer.
+
 ## Data flow
 
 Manager(component) → Table(component) → Pivot(class) → Aggregator(class) → Pivot(class) → Table(component)
@@ -54,7 +56,7 @@ This boundary allows us to reuse this class in the other applications if needed 
 
 This class does data aggregation. It is not aware of Pivot specifics, like rows and columns — it only operates with metrics and dimensions.
 
-Aggregator also contains [aggregation functions](src/components/PivotTable/Aggregator/aggregationFunctions.ts).
+Aggregator also contains [aggregation functions](src/components/PivotTable/Aggregator/aggregationFunctions.ts)
 
 It can easily be part of Pivot class itself, but separating it simplifies testing and makes each piece easier to understand.
 
