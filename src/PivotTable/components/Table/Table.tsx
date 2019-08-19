@@ -36,9 +36,12 @@ export const Table: React.FC<TableProps> = props => {
   const label = (original: string): React.ReactNode =>
     (props.labelOverrides && props.labelOverrides[original]) || original;
 
+  const columnDimensionKeys = props.columns;
+  const rowDimensionKeys = props.rows;
+
   const pivotData = new Pivot(props.data, {
-    columns: props.columns,
-    rows: props.rows,
+    columns: columnDimensionKeys,
+    rows: rowDimensionKeys,
     aggregationType: props.aggregationType,
     valueProperty: props.valueProperty //todo rename value property in Pivot and Aggregator
   });
@@ -54,44 +57,63 @@ export const Table: React.FC<TableProps> = props => {
    */
   theadMarkup.push(
     <tr
+      key="table_thead_row_primary"
       className={classnames(styles.topHeaderRow, styles.topHeaderRow__primary)}
     >
-      <th colSpan={props.rows.length} className={classnames(styles.stickyCell)}>
-        {props.rowsLabel}
+      <th
+        colSpan={rowDimensionKeys.length}
+        className={classnames(styles.stickyCell)}
+      >
+        {props.rowsLabel || null}
       </th>
-      <th colSpan={columns.length}>{props.columnsLabel}</th>
+      <th colSpan={columns.length}>{props.columnsLabel || null}</th>
     </tr>
   );
 
-  for (let i = 0; i < props.columns.length; i++) {
+  /**
+   * In the header, there are columnDimensionKeys.length rows.
+   *
+   * Each row in a correspoding column will display columnDomensionValue.
+   *
+   * However, top/left quadrant is special: it will display rowDimensionKeys
+   */
+  columnDimensionKeys.forEach((columnDimensionKey, columnDimensionIndex) => {
     const rowData: React.ReactElement[] = [];
     /**
-     * First columns will display row dimension titles(or)
+     * First columns will display rowDimensionKeys
      */
-    if (i === props.columns.length - 1) {
-      for (let k = 0; k < props.rows.length; k++) {
-        rowData.push(
-          <th className={classnames(styles.stickyCell)}>
-            {label(props.rows[k])}
-          </th>
-        );
-      }
-    } else {
-      for (let k = 0; k < props.rows.length; k++) {
-        rowData.push(<th></th>);
-      }
-    }
+    rowDimensionKeys.forEach(rowDimensionKey => {
+      const value =
+        columnDimensionIndex === columnDimensionKeys.length - 1
+          ? label(rowDimensionKey)
+          : "";
 
-    /**
-     * Other columns with display column dimension values.
-     */
-    for (let column of columns) {
       rowData.push(
-        <th className={styles.topHeaderCell__value}>
-          {column[i] === "*" ? "Total" : column[i]}
+        <th
+          key={"thead_row_row_dimension_key_" + rowDimensionKey}
+          className={classnames(styles.stickyCell)}
+        >
+          {value}
         </th>
       );
-    }
+    });
+
+    /**
+     * columnDimensionKeys
+     */
+    columns.forEach(column => {
+      const columnDimensionValue = column[columnDimensionIndex];
+      rowData.push(
+        <th
+          className={styles.topHeaderCell__value}
+          key={"thead_row_cell_" + columnDimensionValue}
+        >
+          {columnDimensionValue === "*"
+            ? "Total"
+            : column[columnDimensionIndex]}
+        </th>
+      );
+    });
 
     /**
      * Finally, push rows into thead block with some classes on top.
@@ -100,18 +122,19 @@ export const Table: React.FC<TableProps> = props => {
       <tr
         className={classnames(
           styles.topHeaderRow,
-          i > 0 && styles.topHeaderRow__secondary
+          columnDimensionIndex > 0 && styles.topHeaderRow__secondary
         )}
+        key={"thead_row_" + columnDimensionKey}
       >
         {rowData}
       </tr>
     );
-  }
+  });
 
   /**
    * And push that into the table markup.
    */
-  tableMarkup.push(<thead>{theadMarkup}</thead>);
+  tableMarkup.push(<thead key="thead">{theadMarkup}</thead>);
 
   /**
    * Next step, populate table data.
@@ -123,71 +146,80 @@ export const Table: React.FC<TableProps> = props => {
    */
   let tbodyRowGroupMarkup: React.ReactElement[] = [];
 
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
-    const previousRow = rows[i - 1];
-    const nextRow = rows[i + 1];
+  rows.forEach((row, rowIndex) => {
+    const previousRow = rows[rowIndex - 1];
+    const nextRow = rows[rowIndex + 1];
     const rowData = [];
 
     /** For each row we need to calculate several features
      * to properly style it and select text
      */
-    let isGrandTotalRow = true;
-    let isTotalRow = false;
-    let isSubCategoryAggregation =
+    const isGrandTotalRow = row.filter(v => v === "*").length === row.length;
+    const isTotalRow = row.indexOf("*") >= 0;
+    const isSubCategoryAggregation =
       row.lastIndexOf("*") >= 0 && row.lastIndexOf("*") !== row.length - 1;
-
-    let isFirstOfTopLevelCategory = !previousRow || previousRow[0] !== row[0];
-    let isLastOfTopLevelCategory = !nextRow || nextRow[0] !== row[0];
-
+    const topLevelCategory = row[0];
+    const isFirstOfTopLevelCategory =
+      !previousRow || previousRow[0] !== topLevelCategory;
+    const isLastOfTopLevelCategory =
+      !nextRow || nextRow[0] !== topLevelCategory;
+    const rowKeyPrefix = "row-" + row.join("--");
     if (isSubCategoryAggregation) {
-      continue;
-    }
-
-    for (let rowValue of row) {
-      if (rowValue === "*") {
-        isTotalRow = true;
-      } else {
-        isGrandTotalRow = false;
-      }
+      return;
     }
 
     /**
-     * Again, first we populate row headers.
+     * First we populate row headers.
+     *
+     * There is some special logic here:
      *
      */
     if (isGrandTotalRow) {
-      /** Grand Total row takes full width of the row header block(colspand=rowDimensions.length) */
+      /** 1. Grand total row spans onto rowDimensionLeys.length columns  */
       rowData.push(
-        <th className={classnames(styles.stickyCell)} colSpan={row.length}>
+        <th
+          key={"grand-total"}
+          className={classnames(styles.stickyCell)}
+          colSpan={row.length}
+        >
           Grand total
         </th>
       );
     } else if (isTotalRow) {
-      /** Dimension Total row takes full width of the row header block(colspand=rowDimensions.length) */
+      /** 2. Dimension total row spans onto rowDimensionLeys.length columns */
+
+      /** Also value has basic support of > 2 dimensions, however, this should be improved. */
+      const value =
+        row.filter(rowValue => rowValue !== "*").join("-") + "   total";
+
       rowData.push(
-        <th colSpan={row.length} className={classnames(styles.stickyCell)}>
-          {row.filter(rowValue => rowValue !== "*").join("-") + "   total"}
+        <th
+          key={"total"}
+          colSpan={row.length}
+          className={classnames(styles.stickyCell)}
+        >
+          {value}
         </th>
       );
     } else {
       /** For regular rows, header will display dimension values.
        *
-       * Hover, we only display primary dimension value for the
+       * However, we only display primary dimension value for the
        * first row in given dimension group.
        */
-      row.forEach((rowValue, index) => {
+      row.forEach((rowValue, rowValueIndex) => {
         rowData.push(
           <td
+            key={rowValue}
             className={classnames(
               styles.headerColumn,
-              index === 0
+              rowValueIndex === 0
                 ? styles.headerColumn__primary
                 : styles.headerColumn__secondary,
               styles.stickyCell
             )}
           >
-            {isFirstOfTopLevelCategory || index > 0 ? rowValue : ""}
+            {isFirstOfTopLevelCategory || rowValueIndex > 0 ? rowValue : ""}
           </td>
         );
       });
@@ -196,10 +228,10 @@ export const Table: React.FC<TableProps> = props => {
     /**
      * And now populate values for the categories.
      */
-    for (let column of columns) {
+    columns.forEach(column => {
       const value = pivotData.getValue(row, column) || 0;
-      rowData.push(<td>{formatNumber(value)}</td>);
-    }
+      rowData.push(<td key={column.join("--")}>{formatNumber(value)}</td>);
+    });
 
     /**
      * Last code block is responsible for closing tbody groups and creating new ones, every time we
@@ -207,6 +239,7 @@ export const Table: React.FC<TableProps> = props => {
      */
     tbodyRowGroupMarkup.push(
       <tr
+        key={rowKeyPrefix}
         className={classnames(
           isGrandTotalRow && styles.grandTotalRow,
           isTotalRow ? styles.totalRow : styles.row
@@ -217,10 +250,12 @@ export const Table: React.FC<TableProps> = props => {
     );
 
     if (isLastOfTopLevelCategory) {
-      tableMarkup.push(<tbody>{tbodyRowGroupMarkup}</tbody>);
+      tableMarkup.push(
+        <tbody key={topLevelCategory}>{tbodyRowGroupMarkup}</tbody>
+      );
       tbodyRowGroupMarkup = [];
     }
-  }
+  });
 
   return (
     <div className={styles.tableContainer}>
