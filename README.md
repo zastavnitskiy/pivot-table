@@ -65,7 +65,12 @@ As Kent Beck said in his famous quote, making it fast is the next step.
 
 # Next Steps
 
-Implement sticky headers properly.
-Missing features / design alignment
-Perfo rmance optimisations
-Table Accessibility (ensure [WCAG guidelines](https://www.w3.org/WAI/tutorials/tables/) are met)
+- Refactor table rendering code(needs cleaning up)
+- Refactor the way I use dimensions in the code
+  - Currently I use dimensions in several different ways(object, array of values, array of indexes)
+  - All those ways can be combined into a single data structure and generalized
+- Implement sticky headers properly
+- Implement missing features
+- Ensure design matches the mockup
+- Ensure there are no obvious performance issues
+- Ensure [accessibility guidelines](https://www.w3.org/WAI/tutorials/tables/) are met
