@@ -1,4 +1,7 @@
-Pivot table demo. View online https://pivot-table.netlify.com/
+Pivot table demo.
+
+- Usage example [src/App.tsx](src/App.tsx)
+- Online demo: https://pivot-table.netlify.com/
 
 # Features
 
