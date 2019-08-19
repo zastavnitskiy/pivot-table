@@ -126,17 +126,6 @@ Simple CSS reset for table styles.
   padding-bottom: 20px;
 }
 
-.table .stickyCell {
-  position: sticky;
-  left: 0;
-  box-shadow: 2px 0 2px -1px rgba(0, 0, 0, 0.1);
-  z-index: 1;
-}
-
-.table .stickyCell:nth-child(2) {
-  left: 135px;
-}
-
 .table .topHeaderRow__primary .stickyCell:nth-child(2) {
   outline: 2px solid red;
   left: 246px;

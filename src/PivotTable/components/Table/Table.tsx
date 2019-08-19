@@ -3,6 +3,7 @@ import { Pivot } from "../../Pivot";
 import styles from "./Table.module.css";
 import { classnames, formatNumber } from "../../utilities";
 import { PivotConfig, DataEntry } from "../../index";
+import { StickyTH } from "../StickyTH/StickyTH";
 export interface TableProps extends PivotConfig {
   data: DataEntry[];
   /**
@@ -22,16 +23,6 @@ export interface TableProps extends PivotConfig {
   };
 }
 
-/**
- *
- * Table Component — it's responsible for rendering the table headers and values,
- * grouping headers, etc.
- *
- * It needs some refactoring, if I will have time I will do that.
- *
- * For now, the code is a bit complex and has comments.
- *
- */
 export const Table: React.FC<TableProps> = props => {
   const label = (original: string): React.ReactNode =>
     (props.labelOverrides && props.labelOverrides[original]) || original;
@@ -60,12 +51,9 @@ export const Table: React.FC<TableProps> = props => {
       key="table_thead_row_primary"
       className={classnames(styles.topHeaderRow, styles.topHeaderRow__primary)}
     >
-      <th
-        colSpan={rowDimensionKeys.length}
-        className={classnames(styles.stickyCell)}
-      >
+      <StickyTH colSpan={rowDimensionKeys.length}>
         {props.rowsLabel || null}
-      </th>
+      </StickyTH>
       <th colSpan={columns.length}>{props.columnsLabel || null}</th>
     </tr>
   );
@@ -89,12 +77,9 @@ export const Table: React.FC<TableProps> = props => {
           : "";
 
       rowData.push(
-        <th
-          key={"thead_row_row_dimension_key_" + rowDimensionKey}
-          className={classnames(styles.stickyCell)}
-        >
+        <StickyTH key={"thead_row_row_dimension_key_" + rowDimensionKey}>
           {value}
-        </th>
+        </StickyTH>
       );
     });
 
@@ -177,13 +162,9 @@ export const Table: React.FC<TableProps> = props => {
     if (isGrandTotalRow) {
       /** 1. Grand total row spans onto rowDimensionLeys.length columns  */
       rowData.push(
-        <th
-          key={"grand-total"}
-          className={classnames(styles.stickyCell)}
-          colSpan={row.length}
-        >
+        <StickyTH key={"grand-total"} colSpan={row.length}>
           Grand total
-        </th>
+        </StickyTH>
       );
     } else if (isTotalRow) {
       /** 2. Dimension total row spans onto rowDimensionLeys.length columns */
@@ -193,13 +174,9 @@ export const Table: React.FC<TableProps> = props => {
         row.filter(rowValue => rowValue !== "*").join("-") + "   total";
 
       rowData.push(
-        <th
-          key={"total"}
-          colSpan={row.length}
-          className={classnames(styles.stickyCell)}
-        >
+        <StickyTH key={"total"} colSpan={row.length}>
           {value}
-        </th>
+        </StickyTH>
       );
     } else {
       /** For regular rows, header will display dimension values.
@@ -209,18 +186,17 @@ export const Table: React.FC<TableProps> = props => {
        */
       row.forEach((rowValue, rowValueIndex) => {
         rowData.push(
-          <td
+          <StickyTH
             key={rowValue}
             className={classnames(
               styles.headerColumn,
               rowValueIndex === 0
                 ? styles.headerColumn__primary
-                : styles.headerColumn__secondary,
-              styles.stickyCell
+                : styles.headerColumn__secondary
             )}
           >
             {isFirstOfTopLevelCategory || rowValueIndex > 0 ? rowValue : ""}
-          </td>
+          </StickyTH>
         );
       });
     }

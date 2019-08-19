@@ -48,8 +48,13 @@ it("matches snapshot", () => {
             className="topHeaderRow topHeaderRow__primary"
           >
             <th
-              className="stickyCell"
+              className=" element"
               colSpan={2}
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             />
             <th
               colSpan={2}
@@ -59,12 +64,22 @@ it("matches snapshot", () => {
             className="topHeaderRow"
           >
             <th
-              className="stickyCell"
+              className=" element"
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             >
               Category
             </th>
             <th
-              className="stickyCell"
+              className=" element"
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             >
               Sub-Category
             </th>
@@ -84,16 +99,26 @@ it("matches snapshot", () => {
           <tr
             className="row"
           >
-            <td
-              className="headerColumn headerColumn__primary stickyCell"
+            <th
+              className="headerColumn headerColumn__primary element"
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             >
               Furniture
-            </td>
-            <td
-              className="headerColumn headerColumn__secondary stickyCell"
+            </th>
+            <th
+              className="headerColumn headerColumn__secondary element"
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             >
               Bookcases
-            </td>
+            </th>
             <td>
               262
             </td>
@@ -104,16 +129,26 @@ it("matches snapshot", () => {
           <tr
             className="row"
           >
-            <td
-              className="headerColumn headerColumn__primary stickyCell"
+            <th
+              className="headerColumn headerColumn__primary element"
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             >
               
-            </td>
-            <td
-              className="headerColumn headerColumn__secondary stickyCell"
+            </th>
+            <th
+              className="headerColumn headerColumn__secondary element"
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             >
               Chairs
-            </td>
+            </th>
             <td>
               732
             </td>
@@ -125,8 +160,13 @@ it("matches snapshot", () => {
             className="totalRow"
           >
             <th
-              className="stickyCell"
+              className=" element"
               colSpan={2}
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             >
               Furniture   total
             </th>
@@ -142,16 +182,26 @@ it("matches snapshot", () => {
           <tr
             className="row"
           >
-            <td
-              className="headerColumn headerColumn__primary stickyCell"
+            <th
+              className="headerColumn headerColumn__primary element"
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             >
               Office Supplies
-            </td>
-            <td
-              className="headerColumn headerColumn__secondary stickyCell"
+            </th>
+            <th
+              className="headerColumn headerColumn__secondary element"
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             >
               Labels
-            </td>
+            </th>
             <td>
               15
             </td>
@@ -163,8 +213,13 @@ it("matches snapshot", () => {
             className="totalRow"
           >
             <th
-              className="stickyCell"
+              className=" element"
               colSpan={2}
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             >
               Office Supplies   total
             </th>
@@ -181,8 +236,13 @@ it("matches snapshot", () => {
             className="grandTotalRow totalRow"
           >
             <th
-              className="stickyCell"
+              className=" element"
               colSpan={2}
+              style={
+                Object {
+                  "left": "auto",
+                }
+              }
             >
               Grand total
             </th>
