@@ -1,5 +1,5 @@
 import { Aggregator } from "../Aggregator/Aggregator";
-import { sortDimensions } from "../utilities";
+import { sortDimensions } from "./utilities";
 import { PivotConfig, DataEntry } from "../index";
 
 export class Pivot {
