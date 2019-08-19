@@ -21,11 +21,19 @@ Core logic of the component(aggreation and pivoting) is separated from the React
 
 ## Data flow
 
-Manager(component) → Table(component) → Pivot(class) → Aggregator(class) → Pivot(class) → Table(component)
+[`PivotTable/components/Manager`](src/components/PivotTable/components/Manager/Manager.tsx)
 
-## Dependencies
+↓(raw data)
 
-Manager (depends on) → Table → Pivot → Aggregator
+[`PivotTable/components/Table`](src/components/PivotTable/components/Table/Table.tsx)
+
+↓(raw data) ↑(rows, columns, values)
+
+[`PivotTable/Pivot`](src/components/PivotTable/Pivot/Pivot.ts)
+
+↓(raw data) ↑(aggregated data)
+
+[`PivotTable/Aggregator`](src/components/PivotTable/Aggregator)
 
 ## Components and Classes
 
